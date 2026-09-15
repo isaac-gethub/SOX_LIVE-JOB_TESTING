@@ -99,3 +99,44 @@ export async function getSession() {
   const { data } = await supabase.auth.getSession();
   return data.session;
 }
+
+/** The current trainee's most recent logged exhibit for a Book, or null if none. */
+export async function fetchExhibit(email, bookNum) {
+  const { data, error } = await supabase
+    .from('sapexec_exhibits')
+    .select('*')
+    .eq('email', email)
+    .eq('book_num', bookNum)
+    .order('captured_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Upload a live-captured Word/Excel exhibit for a Book (overwrites any prior upload for that Book). */
+export async function uploadExhibit({ email, userId, dayNum, bookNum, file }) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `${userId}/${dayNum}-${bookNum}/${safeName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('exhibits')
+    .upload(path, file, { upsert: true });
+  if (uploadError) throw uploadError;
+
+  const { error: insertError } = await supabase
+    .from('sapexec_exhibits')
+    .insert({ email, user_id: userId, day_num: dayNum, book_num: bookNum, file_name: file.name, file_url: path });
+  if (insertError) throw insertError;
+
+  return path;
+}
+
+/** Short-lived signed URL to view/download a previously uploaded exhibit (bucket is private). */
+export async function getExhibitDownloadUrl(storagePath) {
+  const { data, error } = await supabase.storage
+    .from('exhibits')
+    .createSignedUrl(storagePath, 60 * 10); // 10 minutes
+  if (error) throw error;
+  return data.signedUrl;
+}

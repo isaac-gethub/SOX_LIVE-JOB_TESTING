@@ -890,6 +890,22 @@
     background:rgba(31,107,103,0.12); color:var(--teal);
   }
   .admin-tier-badge.staff-admin{ background:rgba(138,50,38,0.12); color:var(--brick); }
+  .admin-reauth-overlay{
+    position:fixed; inset:0; background:rgba(9,15,28,0.7); z-index:200;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .admin-reauth-card{
+    background:var(--paper-2); border-radius:8px; padding:28px; max-width:400px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .admin-reauth-card h2{ margin-top:0; font-size:19px; color:var(--ink); }
+  .admin-reauth-card p{ font-size:14px; line-height:1.5; color:#2B3548; margin:0 0 16px; }
+  .admin-reauth-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:16px; }
+  .admin-reauth-cancel{
+    background:none; border:1px solid var(--line); color:var(--ink-soft); border-radius:4px;
+    padding:11px 18px; font-size:14.5px; cursor:pointer; font-family:'Inter',sans-serif;
+  }
+  .admin-reauth-cancel:hover{ border-color:var(--ink-soft); }
 
 @import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap");
 .prereq-content {
@@ -4012,7 +4028,7 @@
 import {
   supabase, fetchCourseData, fetchProgress, markBookComplete,
   fetchEnrollment, signInWithPassword, signUpWithPassword, signOut, getSession,
-  fetchResourceLibrary
+  fetchResourceLibrary, fetchExhibit, uploadExhibit, getExhibitDownloadUrl
 } from './content.js';
 
 let COURSE_DATA = [];
@@ -4036,6 +4052,18 @@ const EXAM_QUESTIONS = [{"module": "b1", "q": "A user in Accounts Payable has au
 
 let completedBooks = new Set();
 let currentEmail = null;
+let currentUserId = null;
+
+// Maps each Book to the 18-day instructor delivery schedule's session number,
+// purely so live-captured exhibits can be grouped/filed the same way the
+// instructor decks and Live Exhibit Log already group them.
+const BOOK_DAY_MAP = {
+  1: 5, 4: 5, 7: 6, 13: 6, 16: 7, 17: 7,
+  2: 8, 5: 8, 8: 9, 18: 9, 19: 10, 20: 10,
+  3: 11, 6: 11, 9: 12, 14: 12, 15: 13, 10: 13,
+  11: 14, 12: 14, 21: 15, 22: 15, 23: 16, 24: 16,
+  25: 17, 26: 17, 27: 18, 28: 18,
+};
 let prereqRead = new Set();
 let prereqPassed = null; // null = not attempted, true/false = last attempt result
 let prereqLastScore = null;
@@ -4486,6 +4514,7 @@ async function afterAuth(){
   const session = await getSession();
   if(!session){ authGate.classList.remove('hidden'); return; }
   currentEmail = session.user.email;
+  currentUserId = session.user.id;
   authGate.classList.add('hidden');
   loadingGate.classList.remove('hidden');
 
@@ -4641,6 +4670,12 @@ function renderBookPage(book){
       </button>
     </div>`;
   }
+  html += `<div class="book-section">
+    <div class="callout" id="exhibit-widget-${book.num}">
+      <span class="stamp">Your Exhibit</span>
+      <div class="exhibit-loading">Loading…</div>
+    </div>
+  </div>`;
   return `<div class="slide">${html}</div>`;
 }
 
@@ -4743,14 +4778,12 @@ function renderToc(){
   libraryRow.onclick = () => openLibraryModal();
   toc.appendChild(libraryRow);
 
-  if(isAdminUser()){
-    const adminRow = document.createElement('div');
-    adminRow.className = 'elective-row' + (state.mode === 'admin' ? ' active' : '');
-    adminRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--red-bright);border-color:var(--red-bright);">ADMIN</span>&nbsp;&nbsp;System Admin</span><span class="eout">⚙</span>`;
-    adminRow.title = 'Enroll trainees — visible only to the system administrator';
-    adminRow.onclick = () => loadAdmin();
-    toc.appendChild(adminRow);
-  }
+  const adminRow = document.createElement('div');
+  adminRow.className = 'elective-row' + (state.mode === 'admin' ? ' active' : '');
+  adminRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--red-bright);border-color:var(--red-bright);">ADMIN</span>&nbsp;&nbsp;System Admin</span><span class="eout">⚙</span>`;
+  adminRow.title = 'System administrator tools — requires re-confirming the admin login';
+  adminRow.onclick = () => openAdminReauth();
+  toc.appendChild(adminRow);
 
   requestAnimationFrame(updateTocScrollHint);
 }
@@ -4770,8 +4803,90 @@ function isAdminUser(){
   return !!currentEmail && currentEmail.trim().toLowerCase() === ADMIN_EMAIL;
 }
 
+// A second, isolated Supabase client used only for the admin re-login and the
+// admin panel's own data calls. Kept separate from the app's main `supabase`
+// client so confirming the admin login never touches the signed-in trainee's
+// own session — course browsing and progress tracking are unaffected either way.
+import { createClient as _createAdminClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const adminSupabase = _createAdminClient(
+  'https://blfgwysgekfqhcafofhe.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZmd3eXNnZWtmcWhjYWZvZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyODY0NDksImV4cCI6MjA5NTg2MjQ0OX0.HPdIMd-X30QBufoL9BVSVte6s_Fc-OOKIq9MbwLrzcI'
+);
+let adminReauthed = false; // reset on every page load — re-confirming is required once per visit, not every click
+
+function openAdminReauth(){
+  if(adminReauthed){ loadAdmin(); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'admin-reauth-overlay';
+  overlay.innerHTML = `
+    <div class="admin-reauth-card">
+      <h2>Confirm Admin Login</h2>
+      <p class="body-text">System Admin is visible to everyone, but re-enter the administrator's own email and password to actually open it. This is separate from your signed-in session — your own course progress is never affected.</p>
+      <div class="admin-field">
+        <label for="reauthEmail">Admin Email</label>
+        <input type="email" id="reauthEmail" placeholder="admin@example.com" autocomplete="off">
+      </div>
+      <div class="admin-field">
+        <label for="reauthPassword">Admin Password</label>
+        <input type="password" id="reauthPassword" placeholder="Password" autocomplete="off">
+      </div>
+      <div id="reauthMsg"></div>
+      <div class="admin-reauth-actions">
+        <button class="admin-reauth-cancel" onclick="closeAdminReauth()">Cancel</button>
+        <button class="admin-submit" id="reauthSubmitBtn" onclick="submitAdminReauth()">Confirm</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('reauthEmail').focus();
+}
+window.openAdminReauth = openAdminReauth;
+
+function closeAdminReauth(){
+  const overlay = document.querySelector('.admin-reauth-overlay');
+  if(overlay) overlay.remove();
+}
+window.closeAdminReauth = closeAdminReauth;
+
+async function submitAdminReauth(){
+  const email = document.getElementById('reauthEmail').value.trim();
+  const password = document.getElementById('reauthPassword').value;
+  const msgEl = document.getElementById('reauthMsg');
+  const btn = document.getElementById('reauthSubmitBtn');
+  msgEl.innerHTML = '';
+  if(!email || !password){
+    msgEl.innerHTML = `<div class="admin-msg error">Enter both email and password.</div>`;
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Confirming…';
+  try{
+    const { data, error } = await adminSupabase.auth.signInWithPassword({ email, password });
+    if(error){
+      msgEl.innerHTML = `<div class="admin-msg error">Sign-in failed. Check the email and password.</div>`;
+      btn.disabled = false; btn.textContent = 'Confirm';
+      return;
+    }
+    const signedInEmail = (data?.user?.email || '').trim().toLowerCase();
+    if(signedInEmail !== ADMIN_EMAIL){
+      // Valid login, just not the admin account — sign this isolated client back out
+      // and give a generic message rather than confirming/denying whose email this is.
+      await adminSupabase.auth.signOut();
+      msgEl.innerHTML = `<div class="admin-msg error">Access denied.</div>`;
+      btn.disabled = false; btn.textContent = 'Confirm';
+      return;
+    }
+    adminReauthed = true;
+    closeAdminReauth();
+    loadAdmin();
+  } catch(e){
+    msgEl.innerHTML = `<div class="admin-msg error">${htmlEscape(e.message || 'Something went wrong.')}</div>`;
+    btn.disabled = false; btn.textContent = 'Confirm';
+  }
+}
+window.submitAdminReauth = submitAdminReauth;
+
 async function loadAdmin(){
-  if(!isAdminUser()) return; // defense in depth — RLS is the real gate, this just avoids a confusing UI state
+  if(!adminReauthed) return; // defense in depth — RLS is the real gate, this just avoids a confusing UI state
   stopNarration();
   state.mode = 'admin';
   state.landing = false;
@@ -4790,7 +4905,7 @@ function renderAdminShell(){
   return `<div class="slide admin-wrap">
     <div class="book-tab"><span class="n">SYSTEM ADMIN</span></div>
     <h1 class="book-title">Enroll a Trainee</h1>
-    <p class="body-text" style="max-width:600px;">Creates the trainee's sign-in account and their Course 1 enrollment record in one step. Visible only to ${ADMIN_EMAIL} — everyone else never sees this menu item, and the database itself refuses these writes from any other account.</p>
+    <p class="body-text" style="max-width:600px;">Creates the trainee's sign-in account and their Course 1 enrollment record in one step. This menu item is visible to everyone, but you just re-confirmed the administrator login to get here — the database itself refuses these writes from any other account, regardless of what the screen shows.</p>
     <div class="admin-form">
       <div class="admin-row-2">
         <div class="admin-field">
@@ -4828,7 +4943,7 @@ async function refreshAdminEnrollmentList(){
   const el = document.getElementById('adminEnrollList');
   if(!el) return;
   try{
-    const { data, error } = await supabase.from('sapexec_enrollments')
+    const { data, error } = await adminSupabase.from('sapexec_enrollments')
       .select('email, tier, payment_ref, created_at')
       .order('created_at', { ascending: false });
     if(error) throw error;
@@ -4894,7 +5009,7 @@ async function submitAdminEnroll(){
 
     const newUserId = data && data.user ? data.user.id : null;
 
-    const { error: insertError } = await supabase.from('sapexec_enrollments').insert({
+    const { error: insertError } = await adminSupabase.from('sapexec_enrollments').insert({
       email, user_id: newUserId, tier: tier || 'solo', payment_ref: paymentRef || null,
     });
     if(insertError) throw insertError;
@@ -4918,6 +5033,64 @@ async function submitAdminEnroll(){
 window.submitAdminEnroll = submitAdminEnroll;
 
 
+async function initExhibitWidget(book){
+  const el = document.getElementById('exhibit-widget-' + book.num);
+  if(!el || !currentEmail) return;
+  el.innerHTML = `<span class="stamp">Your Exhibit</span><div class="exhibit-loading">Loading…</div>`;
+  try{
+    const row = await fetchExhibit(currentEmail, book.num);
+    if(row){
+      renderExhibitFilled(book.num, row);
+    } else {
+      renderExhibitEmpty(book.num);
+    }
+  } catch(e){
+    el.innerHTML = `<span class="stamp">Your Exhibit</span><p class="exhibit-hint">Could not load: ${htmlEscape(e.message)}</p>`;
+  }
+}
+
+function renderExhibitEmpty(bookNum){
+  const el = document.getElementById('exhibit-widget-' + bookNum);
+  if(!el) return;
+  el.innerHTML = `
+    <span class="stamp">Your Exhibit</span>
+    <p class="exhibit-hint">Upload the Word or Excel exhibit you built for this Book.</p>
+    <input type="file" id="exhibit-file-${bookNum}" accept=".docx,.xlsx" style="display:none" onchange="handleExhibitFileChange(${bookNum}, this)">
+    <button type="button" class="view-exhibit-btn" onclick="document.getElementById('exhibit-file-${bookNum}').click()">⬆ Upload Exhibit</button>
+  `;
+}
+
+async function renderExhibitFilled(bookNum, row){
+  const el = document.getElementById('exhibit-widget-' + bookNum);
+  if(!el) return;
+  const dateStr = new Date(row.captured_at).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  let link = '#';
+  try { link = await getExhibitDownloadUrl(row.file_url); } catch(e){ /* leave link as # if signing fails */ }
+  el.innerHTML = `
+    <span class="stamp">Your Exhibit</span>
+    <p class="exhibit-hint">${htmlEscape(row.file_name)} — captured ${dateStr}</p>
+    <input type="file" id="exhibit-file-${bookNum}" accept=".docx,.xlsx" style="display:none" onchange="handleExhibitFileChange(${bookNum}, this)">
+    <a class="view-exhibit-btn" href="${link}" target="_blank" rel="noopener">📄 View / Download</a>
+    <button type="button" class="view-exhibit-btn" onclick="document.getElementById('exhibit-file-${bookNum}').click()">Replace</button>
+  `;
+}
+
+async function handleExhibitFileChange(bookNum, inputEl){
+  const file = inputEl.files && inputEl.files[0];
+  if(!file || !currentEmail || !currentUserId) return;
+  const el = document.getElementById('exhibit-widget-' + bookNum);
+  if(el) el.innerHTML = `<span class="stamp">Your Exhibit</span><p class="exhibit-hint">Uploading…</p>`;
+  try{
+    const dayNum = BOOK_DAY_MAP[bookNum] || 0;
+    await uploadExhibit({ email: currentEmail, userId: currentUserId, dayNum, bookNum, file });
+    const row = await fetchExhibit(currentEmail, bookNum);
+    if(row) renderExhibitFilled(bookNum, row); else renderExhibitEmpty(bookNum);
+  } catch(e){
+    if(el) el.innerHTML = `<span class="stamp">Your Exhibit</span><p class="exhibit-hint">Upload failed: ${htmlEscape(e.message)}</p>`;
+  }
+}
+window.handleExhibitFileChange = handleExhibitFileChange;
+
 function loadBook(pIdx, bIdx){
   stopNarration();
   state.mode = 'book';
@@ -4930,6 +5103,7 @@ function loadBook(pIdx, bIdx){
   updateNavButtons();
   document.getElementById('courseInner').scrollTop = 0;
   closeToc();
+  initExhibitWidget(book);
 }
 window.loadBook = loadBook;
 
