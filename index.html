@@ -4122,7 +4122,7 @@ const OVERVIEW_SLIDES = [
     narration: 'What this course actually prepares you for.',
     html: `<p class="body-text">This is a full SOX / ITGC controls-testing course built around SAP GRC, Security, and Fiori — the same three skill areas that show up together in almost every SAP GRC/Security/Controls job posting, from entry-level through experienced hires, and rarely get taught together.</p>
            <p class="body-text">The goal isn't awareness of what SOX/ITGC testing is. It's the ability to sit down in a live SAP system on day one of a real engagement and actually do the work: run the transaction, pull the evidence, and write it up the way a reviewer expects to see it.</p>
-           <p class="body-text"><b>47 Books across 12 Parts</b> (Foundations plus 11 control domains, including a Manager Track elective) walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
+           <p class="body-text"><b>54 Books across 14 Parts</b> (Foundations plus 13 control domains, including Manager Track and Clean Core / RISE electives) walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
   },
   {
     kicker: 'Scope Coverage',
@@ -4138,9 +4138,11 @@ const OVERVIEW_SLIDES = [
       <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
       <div class="intro-part-row"><b>Part VII — Business Application Controls</b><span>Matching, payments, tolerances, batch jobs, and asset parameters above ITGC. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls</b><span>Credit-block release independence and billing cutoff / revenue recognition testing. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation aging and tax configuration change testing. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation aging, tax configuration change, FX hedge accounting, and in-house cash / intercompany netting testing. (4 Books)</span></div>
       <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice</b><span>Third-party GRC platforms, full-population data analytics, and GRC 2026 / AI-assisted review. (3 Books)</span></div>
       <div class="intro-part-row"><b>Part XI — Manager Track Elective</b><span>RCM construction, design effectiveness, sampling methodology, and deficiency classification — from finding to closure. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance</b><span>Where a control lives, and who owns it, once the environment moves to Clean Core / RISE. (1 Book, elective)</span></div>
+      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls</b><span>Ghost employees, unauthorized pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">That's the same range of ground a consultant is expected to cover across their first several engagements — compressed into one course instead of learned engagement by engagement.</p>`,
   },
@@ -4226,9 +4228,11 @@ const INTRO_SLIDES = [
       <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
       <div class="intro-part-row"><b>Part VII — Business Application Controls</b><span>Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls</b><span>Whether the revenue side of the business is controlled as tightly as the money already covered above. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation and tax configuration exposure. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation, tax configuration, FX hedge documentation, and intercompany cash controls. (4 Books)</span></div>
       <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice</b><span>Third-party GRC platforms, data analytics, and AI-assisted review. (3 Books)</span></div>
       <div class="intro-part-row"><b>Part XI — Manager Track Elective</b><span>Turning findings into a Risk &amp; Control Matrix, a severity rating, and a defensible conclusion. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance</b><span>Where a control lives and who owns it after a move to Clean Core / RISE. (1 Book, elective)</span></div>
+      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls</b><span>Payroll master data, pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">Each Part groups Books by the area of control they test — the same structure used in real SOX/ITGC and GRC engagements.</p>`,
   },
@@ -4813,13 +4817,6 @@ function renderToc(){
   libraryRow.onclick = () => openLibraryModal();
   toc.appendChild(libraryRow);
 
-  const materialsRow = document.createElement('div');
-  materialsRow.className = 'elective-row';
-  materialsRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--amber-deep);border-color:var(--amber-deep);">DOWNLOADS</span>&nbsp;&nbsp;Course Materials</span><span class="eout">⬇</span>`;
-  materialsRow.title = 'The Handbook, Navigation Guide, Reading Packs, templates, and pre/post-class chapters — everything as downloadable files';
-  materialsRow.onclick = () => openCourseMaterialsModal();
-  toc.appendChild(materialsRow);
-
   const adminRow = document.createElement('div');
   adminRow.className = 'elective-row' + (state.mode === 'admin' ? ' active' : '');
   adminRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--red-bright);border-color:var(--red-bright);">ADMIN</span>&nbsp;&nbsp;System Admin</span><span class="eout">⚙</span>`;
@@ -5199,7 +5196,7 @@ function showComplete(){
   document.getElementById('courseInner').innerHTML = `<div class="slide"><div class="complete-page">
     <div class="trophy">🏅</div>
     <h1>Course Complete</h1>
-    <p>You've worked through every Book across all 12 Parts of the SAP Testing Execution Guide — ${completedBooks.size} of ${totalBooks()} completed.</p>
+    <p>You've worked through every Book across all 14 Parts of the SAP Testing Execution Guide — ${completedBooks.size} of ${totalBooks()} completed.</p>
     <button class="cta-start" onclick="loadIntro()">Back to Course Introduction</button>
   </div></div>`;
   renderToc();
@@ -5667,94 +5664,6 @@ async function openLibraryModal(){
   }
 }
 window.openLibraryModal = openLibraryModal;
-
-/* ---------- Course Materials (static downloads, reuses the Library modal shell) ---------- */
-const COURSE_MATERIALS = [
-  { category: 'Start Here', items: [
-    { label: 'Student Handbook', path: 'materials/00-start-here/Student-Handbook-START-HERE.docx' },
-    { label: 'Navigation Guide — Pack and App, Side by Side', path: 'materials/00-start-here/Navigation-Guide-Pack-and-App-Side-by-Side.docx' },
-    { label: 'Junior Study Guide', path: 'materials/00-start-here/TIB-CONTROLS-Consultant_STUDYGUIDE-JR_v2CL.pdf' },
-    { label: 'Syllabus & Reading Schedule', path: 'materials/00-start-here/TIB-Course1-Syllabus-and-Reading-Schedule.docx' },
-  ]},
-  { category: 'Pre-Class Reading', items: [
-    { label: 'Pre-Class Reading Plan (8 Days)', path: 'materials/01-pre-class/Pre-Class-Reading-Plan-8-Days.docx' },
-    { label: 'Prerequisite: SAP Foundations', path: 'materials/01-pre-class/TIB-TRN-PREREQ-SAP-FOUNDATIONS-001.pdf' },
-    { label: 'Prerequisite: SAP Apps Landscape', path: 'materials/01-pre-class/TIB-TRN-PREREQ-SAP-APPS-LANDSCAPE-003.pdf' },
-    { label: 'Prerequisite: SAP Security & Controls', path: 'materials/01-pre-class/TIB-TRN-PREREQ-SAP-SECURITY-CONTROLS-002.pdf' },
-  ]},
-  { category: 'Templates', items: [
-    { label: 'Workpaper Template & Standard', path: 'materials/02-templates/Workpaper-Template-and-Standard.docx' },
-    { label: 'Planning Card Template', path: 'materials/02-templates/Planning-Card-Template.docx' },
-    { label: 'Question Submission Template', path: 'materials/02-templates/Question-Submission-Template.docx' },
-  ]},
-  { category: 'Reading Packs', items: [
-    { label: 'Reading Pack 1 — Module 1 (Theory)', path: 'materials/03-reading-packs/Reading-Pack-1-Before-Monday-Week-1-Module-1.docx' },
-    { label: 'Reading Pack 2 — Module 2 (Theory)', path: 'materials/03-reading-packs/Reading-Pack-2-Before-Wednesday-Week-1-Module-2.docx' },
-    { label: 'Reading Pack 3 — Module 3 (Theory)', path: 'materials/03-reading-packs/Reading-Pack-3-Before-Friday-Week-1-Module-3.docx' },
-    { label: 'Reading Pack 4 — Module 1 (Lab)', path: 'materials/03-reading-packs/Reading-Pack-4-Before-Monday-Week-2-Lab-Module-1.docx' },
-    { label: 'Reading Pack 5 — Module 2 (Lab)', path: 'materials/03-reading-packs/Reading-Pack-5-Before-Wednesday-Week-2-Lab-Module-2.docx' },
-    { label: 'Reading Pack 6 — Module 3 (Lab)', path: 'materials/03-reading-packs/Reading-Pack-6-Before-Friday-Week-2-Lab-Module-3.docx' },
-    { label: 'Reading Packs — Days 12–20 (Parts VII–XII)', path: 'materials/03-reading-packs/Reading-Packs-Days12-20-Parts-VII-XII.docx' },
-  ]},
-  { category: 'Post-Class Materials', items: [
-    { label: 'Post-Class Reading Plan', path: 'materials/04-post-class/Post-Class-Reading-Plan.docx' },
-    { label: 'Ch.1 Training Manual — S/4HANA Implementations & Upgrades', path: 'materials/04-post-class/Chapter_1_Training_Manual_SAP_S-4HANA_Implementations_and_Upgrades.pdf' },
-    { label: 'Ch.1 Course Summary — S/4HANA Implementations & Upgrades', path: 'materials/04-post-class/Chapter_1_Course_Summary_SAP_S-4HANA_Implementations_and_Upgrades.pdf' },
-    { label: 'Ch.2 Training Manual — ITGC, Basis Settings & Security', path: 'materials/04-post-class/Chapter_2_Training_Manual_IT_General_Controls_Basis_Settings_and_Security.pdf' },
-    { label: 'Ch.2 Course Summary — ITGC, Basis Settings & Security', path: 'materials/04-post-class/Chapter_2_Course_Summary_IT_General_Controls_Basis_Settings_and_Security.pdf' },
-    { label: 'Ch.3 Training Manual — Record-to-Report Cycle', path: 'materials/04-post-class/Chapter_3_Training_Manual_Record-to-Report_Cycle.pdf' },
-    { label: 'Ch.3 Course Summary — Record-to-Report Cycle', path: 'materials/04-post-class/Chapter_3_Course_Summary_Record-to-Report_Cycle.pdf' },
-    { label: 'Ch.4 Training Manual — Order-to-Cash Cycle', path: 'materials/04-post-class/Chapter_4_Training_Manual_Order-to-Cash_Cycle.pdf' },
-    { label: 'Ch.4 Course Summary — Order-to-Cash Cycle', path: 'materials/04-post-class/Chapter_4_Course_Summary_Order-to-Cash_Cycle.pdf' },
-    { label: 'Ch.5 Training Manual — Purchase-to-Pay Cycle', path: 'materials/04-post-class/Chapter_5_Training_Manual_Purchase-to-Pay_Cycle.pdf' },
-    { label: 'Ch.5 Course Summary — Purchase-to-Pay Cycle', path: 'materials/04-post-class/Chapter_5_Course_Summary_Purchase-to-Pay_Cycle.pdf' },
-    { label: 'Ch.6 Training Manual — Forecast-to-Stock Cycle', path: 'materials/04-post-class/Chapter_6_Training_Manual_Forecast-to-Stock_Cycle.pdf' },
-    { label: 'Ch.6 Course Summary — Forecast-to-Stock Cycle', path: 'materials/04-post-class/Chapter_6_Course_Summary_Forecast-to-Stock_Cycle.pdf' },
-    { label: 'Ch.7 Training Manual — Audit Tips, Tricks & Tools', path: 'materials/04-post-class/Chapter_7_Training_Manual_Audit_Tips_Tricks_and_Tools.pdf' },
-    { label: 'Ch.7 Course Summary — Audit Tips, Tricks & Tools', path: 'materials/04-post-class/Chapter_7_Course_Summary_Audit_Tips_Tricks_and_Tools.pdf' },
-    { label: 'Ch.8 Training Manual — Final Audit Preparations', path: 'materials/04-post-class/Chapter_8_Training_Manual_Final_Audit_Preparations.pdf' },
-    { label: 'Ch.8 Course Summary — Final Audit Preparations', path: 'materials/04-post-class/Chapter_8_Course_Summary_Final_Audit_Preparations.pdf' },
-  ]},
-];
-
-function renderCourseMaterials(){
-  const overlay = document.querySelector('.directions-modal-overlay');
-  if(!overlay) return;
-  overlay.querySelector('.directions-modal-eyebrow').textContent = 'Course Materials';
-  overlay.querySelector('.expand-tool-box')?.remove();
-  overlay.querySelector('.directions-modal-body').innerHTML = `
-    <p class="body-text" style="margin-bottom:18px;color:#4A5872;">Everything from your pack as a downloadable file — the Handbook, Navigation Guide, Reading Packs, templates, and pre/post-class chapters. Tap any item to download it.</p>
-    ${COURSE_MATERIALS.map(group => `
-      <h3>${htmlEscape(group.category)}</h3>
-      <div class="library-list" style="margin-bottom:22px;">
-        ${group.items.map(it => `<a class="library-card" href="${attrEscape(it.path)}" download style="text-decoration:none;">
-          <div><h3 style="text-transform:none;letter-spacing:0;">${htmlEscape(it.label)}</h3></div>
-          <span class="ext-tag">${it.path.split('.').pop().toUpperCase()}</span>
-        </a>`).join('')}
-      </div>
-    `).join('')}
-  `;
-}
-
-function openCourseMaterialsModal(){
-  const overlay = document.createElement('div');
-  overlay.className = 'directions-modal-overlay';
-  overlay.innerHTML = `
-    <div class="directions-modal">
-      <div class="directions-modal-head">
-        <div><div class="directions-modal-eyebrow">Course Materials</div></div>
-        <button type="button" class="directions-modal-close with-label" onclick="closeDirectionsExpand()" aria-label="Close Course Materials"><span class="x-icon">✕</span><span>Close</span></button>
-      </div>
-      <div class="directions-modal-body"></div>
-    </div>`;
-  document.body.appendChild(overlay);
-  document.body.style.overflow = 'hidden';
-  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeDirectionsExpand(); });
-  document.addEventListener('keydown', escCloseDirectionsHandler);
-  closeToc();
-  renderCourseMaterials();
-}
-window.openCourseMaterialsModal = openCourseMaterialsModal;
 
 /* ---------- Per-Book "View a Completed Example" ---------- */
 function renderExhibitDataTable(dt){
