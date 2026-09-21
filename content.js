@@ -38,6 +38,10 @@ export async function fetchCourseData() {
       evidence: row.evidence || '',
       pitfall: row.pitfall || '',
       sampleExhibit: row.sample_exhibit || null,
+      processArea: row.process_area || null,
+      processGroup: row.process_group || null,
+      secondaryProcess: row.secondary_process || [],
+      sapModules: row.sap_modules || [],
     });
   }
   return parts;

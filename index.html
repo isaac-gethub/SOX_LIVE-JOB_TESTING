@@ -627,6 +627,66 @@
   }
   .cta-start:hover{ background:var(--amber-deep); color:#fff; }
 
+  /* ===== Course Coverage Map (mobile-first: phone base, 600px tablet, 880px desktop) ===== */
+  .cov-page{ padding:4px 0 28px; color:var(--ink); }
+  .cov-eyebrow{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--amber-deep); font-weight:700; margin-bottom:4px; }
+  .cov-title{ font-family:'Spectral',serif; font-weight:700; font-size:22px; line-height:1.2; margin:0 0 6px; color:var(--ink); }
+  .cov-sub{ font-size:14px; line-height:1.5; color:var(--ink-soft); margin:0 0 14px; max-width:780px; }
+  .cov-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:14px; }
+  .cov-stat{ background:var(--paper-2); border:1px solid var(--line); border-radius:6px; padding:10px 12px; }
+  .cov-stat .n{ font-family:'Spectral',serif; font-size:24px; font-weight:700; color:var(--ink); line-height:1; }
+  .cov-stat .l{ font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink-soft); margin-top:4px; }
+  .cov-stat.wide{ grid-column:1 / -1; }
+  .cov-bar{ height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:6px; }
+  .cov-bar i{ display:block; height:100%; background:var(--teal); }
+  .cov-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 12px; }
+  .cov-tab{ font:600 13px 'Inter',sans-serif; padding:8px 12px; border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:2px; cursor:pointer; }
+  .cov-tab.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .cov-expand{ font-size:12px; color:var(--ink-soft); margin-bottom:4px; }
+  .cov-group{ font-family:'Spectral',serif; font-size:17px; color:var(--ink); margin:18px 0 8px; padding-bottom:4px; border-bottom:2px solid var(--amber); }
+  .cov-area{ background:var(--paper-2); border-left:4px solid var(--teal); border-radius:2px; padding:10px 12px 12px; margin-bottom:12px; }
+  .cov-area h3{ font-family:'Spectral',serif; font-size:16px; margin:0; color:var(--ink); }
+  .cov-area-meta{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .cov-book{ background:#fff; border:1px solid var(--line); border-radius:4px; margin-top:8px; }
+  .cov-book summary{ list-style:none; cursor:pointer; display:grid; grid-template-columns:auto 1fr auto; gap:4px 10px; align-items:start; padding:9px 10px; }
+  .cov-book summary::-webkit-details-marker{ display:none; }
+  .cov-bnum{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--amber-deep); padding-top:2px; }
+  .cov-btitle b{ display:block; font-size:14px; color:var(--ink); }
+  .cov-btitle em{ display:block; font-style:normal; font-size:12.5px; color:var(--ink-soft); }
+  .cov-bmeta{ grid-column:2 / 4; display:flex; flex-wrap:wrap; gap:4px; }
+  .cov-tick{ color:var(--teal); font-weight:700; }
+  .cov-book.done{ border-color:var(--teal); }
+  .cov-chip{ font:500 10.5px 'JetBrains Mono',monospace; padding:2px 6px; border:1px solid var(--line); border-radius:10px; background:var(--paper-2); color:var(--ink-soft); white-space:nowrap; }
+  .cov-chip.alt{ border-color:var(--amber); color:var(--amber-deep); background:#fff; }
+  .cov-steps{ border-top:1px solid var(--line); padding:8px 10px 10px; }
+  .cov-steps-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px; }
+  .cov-open, .cov-link{ font:600 12px 'Inter',sans-serif; color:var(--teal); background:none; border:none; cursor:pointer; padding:2px 0; text-decoration:underline; }
+  .cov-steps ul{ list-style:none; margin:0; padding:0; }
+  .cov-steps li{ display:flex; flex-direction:column; gap:2px; padding:6px 0; border-bottom:1px dashed var(--line); font-size:13px; color:#2B3548; }
+  .cov-steps li:last-child{ border-bottom:none; }
+  .cov-code{ font:600 12px 'JetBrains Mono',monospace; color:var(--ink); }
+  .cov-also{ font-size:12px; color:var(--ink-soft); margin-top:8px; }
+  .cov-controls{ display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+  .cov-controls input, .cov-controls select{ font:14px 'Inter',sans-serif; padding:9px 10px; border:1px solid var(--line); border-radius:2px; background:#fff; color:var(--ink); width:100%; box-sizing:border-box; }
+  .cov-count{ font-size:12px; color:var(--ink-soft); margin-bottom:8px; }
+  .cov-test{ display:flex; flex-direction:column; gap:3px; padding:8px 10px; background:#fff; border:1px solid var(--line); border-radius:4px; margin-bottom:6px; font-size:13px; color:#2B3548; }
+  .cov-test .top{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .cov-empty{ padding:14px; background:var(--paper-2); border:1px dashed var(--line); font-size:13.5px; color:var(--ink-soft); }
+  @media (min-width:601px){
+    .cov-stats{ grid-template-columns:repeat(3,1fr); }
+    .cov-title{ font-size:26px; }
+    .cov-controls{ flex-direction:row; }
+    .cov-controls input{ flex:2; }
+    .cov-controls select{ flex:1; }
+    .cov-steps li{ flex-direction:row; gap:12px; }
+    .cov-code{ flex:0 0 190px; }
+  }
+  @media (min-width:881px){
+    .cov-stats{ grid-template-columns:repeat(5,1fr); }
+    .cov-stat.wide{ grid-column:auto; }
+  }
+
+
   /* ===== Full-book page: all sections stacked, no per-step pagination ===== */
   .book-section{ margin-bottom:16px; }
   .book-section:last-child{ margin-bottom:0; }
@@ -3984,14 +4044,14 @@
     <section class="pane pane-course" id="paneCourse" style="width:56%;">
       <div class="pane-header">
         <span>Field Course Player</span>
-        <span class="tag" id="progressTag">Book 1 of 22</span>
+        <span class="tag" id="progressTag">Loading…</span>
       </div>
       <div class="pane-course-inner" id="courseInner"></div>
       <div class="player-bar">
         <button id="btnPrev" title="Previous">◀</button>
         <button id="btnPlay" class="play" title="Play narration">▶</button>
         <button id="btnNext" title="Next">▶</button>
-        <span class="slide-label" id="slideLabel">Book 1 of 22</span>
+        <span class="slide-label" id="slideLabel">Loading…</span>
       </div>
     </section>
 
@@ -4109,7 +4169,9 @@ const PART_SCOPE = {
   'VIII': 'Whether the order-to-cash cycle — credit release and billing cutoff — is controlled as tightly as the money already covered above.',
   'IX':  'Treasury and tax configuration exposure most testers never get assigned until they ask for it.',
   'X':   'The tools and methods increasingly sitting alongside native SAP GRC — third-party platforms, data analytics, and AI-assisted review.',
-  'XI':  'Elective — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.'
+  'XI':  'Elective — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.',
+  'XII': 'Elective — where a control lives, and who owns it, once the environment moves to Clean Core / RISE.',
+  'XIII': 'Whether payroll and personnel data and payments are controlled — ghost employees, pay-rate changes, off-cycle payments, and payroll-to-GL reconciliation.'
 };
 
 /* ---------- Course Overview (persuasive, scope-and-value onboarding page,
@@ -4260,6 +4322,182 @@ function loadOverview(){
   closeToc();
 }
 window.loadOverview = loadOverview;
+
+/* ---------- Course Coverage Map (reference page: every test, by business process and SAP module) ---------- */
+const COV_GROUP_ORDER = ['Business Process Cycles','IT General Controls','GRC, Governance & Emerging Practice'];
+const COV_AREA_ORDER = ['Procure-to-Pay','Order-to-Cash','Record-to-Report','Treasury & Tax','Hire-to-Retire','Access & Identity','Change Management','Computer Operations','GRC Platforms','SOX Program & Reporting','Compliance & Licensing','Emerging Practice'];
+const COV_MODULE_ORDER = ['FI','FI-AA','FI-TR','FI (Tax)','MM','SD','HR-PY','HR interface','BC','BC-SEC','Fiori','GRC-AC','GRC-PC','GRC-RM','GRC 2026 (Joule)','ILM','License Mgmt','S/4HANA Cloud / RISE','Third-party GRC','Analytics tooling','Cross-cutting (SOX program)'];
+const COV_MODULE_NAMES = {
+  'FI':'Financial Accounting (GL, AP, AR)', 'FI-AA':'Asset Accounting', 'FI-TR':'Treasury / Cash Management (incl. TRM)', 'FI (Tax)':'Tax Configuration',
+  'MM':'Materials Management (Procurement, Invoice Verification)', 'SD':'Sales & Distribution', 'HR-PY':'Payroll & Personnel Administration', 'HR interface':'HR/HCM (as a feed into SAP)',
+  'BC':'Basis / NetWeaver Administration', 'BC-SEC':'Security & Authorizations', 'Fiori':'Fiori Launchpad / UI Technology',
+  'GRC-AC':'GRC Access Control (ARA/ARM/EAM/BRM)', 'GRC-PC':'GRC Process Control (CCM)', 'GRC-RM':'GRC Risk Management', 'GRC 2026 (Joule)':'GRC + Joule (AI-assisted)',
+  'ILM':'Information Lifecycle Management', 'License Mgmt':'Digital Access / Indirect Usage', 'S/4HANA Cloud / RISE':'Clean Core, Extensibility, BTP',
+  'Third-party GRC':'Pathlock, Fastpath, AuditBoard, SailPoint (non-SAP)', 'Analytics tooling':'SQL, Alteryx, Power BI (non-SAP)', 'Cross-cutting (SOX program)':'Methodology applied across every module'
+};
+const COV_NON_SAP = new Set(['Third-party GRC','Analytics tooling','Cross-cutting (SOX program)']);
+let covState = { tab:'process', q:'', area:'' };
+
+const covEsc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const covPad = n => String(n).padStart(2,'0');
+function covStepDesc(d){
+  let t = String(d || '').replace(/\s*\[Navigation:[\s\S]*$/,'').trim();
+  const m = t.match(/^([\s\S]{40,}?[.!?])(\s|$)/);
+  if(m) t = m[1];
+  if(t.length > 190){ t = t.slice(0,187); const i = t.lastIndexOf(' '); t = (i > 120 ? t.slice(0,i) : t).trimEnd() + '…'; }
+  return t;
+}
+function covCode(s){ return (s && s.code && s.code !== '—') ? s.code : 'Analysis'; }
+function covBooks(){
+  const out = [];
+  COURSE_DATA.forEach((p,pIdx) => p.books.forEach((b,bIdx) => {
+    if(b.num < 100 && b.processArea) out.push(Object.assign({}, b, { pIdx, bIdx, part: p.numeral }));
+  }));
+  return out;
+}
+function covOrdered(list, order){
+  const out = []; const seen = new Set();
+  order.forEach(k => { if(list.includes(k)){ out.push(k); seen.add(k); } });
+  list.forEach(k => { if(!seen.has(k)) out.push(k); });
+  return out;
+}
+function covBookRow(b, mode){
+  const done = completedBooks.has(b.num);
+  const steps = b.execTable || [];
+  const mods = (b.sapModules || []).map(m => `<span class="cov-chip">${covEsc(m)}</span>`).join('');
+  const areaChip = mode === 'module' ? `<span class="cov-chip alt">${covEsc(b.processArea)}</span>` : '';
+  const also = mode === 'process' ? (b.secondaryProcess || []).map(a => `<span class="cov-chip alt">also: ${covEsc(a)}</span>`).join('') : '';
+  const stepsHtml = steps.map(s => `<li><span class="cov-code">${covEsc(covCode(s))}</span><span>${covEsc(covStepDesc(s.directions))}</span></li>`).join('');
+  return `<details class="cov-book${done ? ' done' : ''}"><summary>
+      <span class="cov-bnum">${covPad(b.num)}</span>
+      <span class="cov-btitle"><b>${covEsc(b.shortname)}</b><em>${covEsc(b.subtitle)}</em></span>
+      <span class="cov-tick">${done ? '✓' : ''}</span>
+      <span class="cov-bmeta">${areaChip}${mods}${also}</span>
+    </summary>
+    <div class="cov-steps"><div class="cov-steps-head"><span>${steps.length} test step${steps.length === 1 ? '' : 's'}</span><button type="button" class="cov-open" data-open-book="${b.num}">Open Book →</button></div><ul>${stepsHtml}</ul></div></details>`;
+}
+function covExpandBar(){
+  return `<div class="cov-expand"><button type="button" class="cov-link" data-cov-expand="open">Expand all tests</button> &nbsp;·&nbsp; <button type="button" class="cov-link" data-cov-expand="close">Collapse all</button></div>`;
+}
+function covSectionHead(title, sub, bs){
+  const done = bs.filter(b => completedBooks.has(b.num)).length;
+  const pct = bs.length ? Math.round(done / bs.length * 100) : 0;
+  const tests = bs.reduce((n,b) => n + (b.execTable || []).length, 0);
+  return `<header><h3>${covEsc(title)}</h3><div class="cov-area-meta">${sub ? covEsc(sub) + ' · ' : ''}${bs.length} Book${bs.length === 1 ? '' : 's'} · ${tests} test steps · ${done} of ${bs.length} completed</div><div class="cov-bar"><i style="width:${pct}%"></i></div></header>`;
+}
+function covProcessView(books){
+  const groupOf = {}; books.forEach(b => { groupOf[b.processArea] = b.processGroup; });
+  const areas = Object.keys(groupOf);
+  const groups = covOrdered([...new Set(books.map(b => b.processGroup))], COV_GROUP_ORDER);
+  return groups.map(g => {
+    const list = covOrdered(areas.filter(a => groupOf[a] === g), COV_AREA_ORDER);
+    return `<h2 class="cov-group">${covEsc(g)}</h2>` + list.map(a => {
+      const bs = books.filter(b => b.processArea === a);
+      const also = books.filter(b => b.processArea !== a && (b.secondaryProcess || []).includes(a));
+      const alsoHtml = also.length ? `<div class="cov-also">Also supports this area: ${also.map(b => `<button type="button" class="cov-link" data-open-book="${b.num}">Book ${covPad(b.num)}</button>`).join(', ')}</div>` : '';
+      return `<section class="cov-area">${covSectionHead(a, '', bs)}${bs.map(b => covBookRow(b,'process')).join('')}${alsoHtml}</section>`;
+    }).join('');
+  }).join('');
+}
+function covModuleView(books){
+  const mods = covOrdered([...new Set(books.flatMap(b => b.sapModules || []))], COV_MODULE_ORDER);
+  const block = (title, list) => list.length ? `<h2 class="cov-group">${title}</h2>` + list.map(m => {
+    const bs = books.filter(b => (b.sapModules || []).includes(m));
+    return `<section class="cov-area">${covSectionHead(m, COV_MODULE_NAMES[m] || '', bs)}${bs.map(b => covBookRow(b,'module')).join('')}</section>`;
+  }).join('') : '';
+  return block('SAP modules & components', mods.filter(m => !COV_NON_SAP.has(m))) + block('Non-SAP tooling & cross-cutting methodology', mods.filter(m => COV_NON_SAP.has(m)));
+}
+function covTestsControls(books){
+  const areas = covOrdered([...new Set(books.map(b => b.processArea))], COV_AREA_ORDER);
+  return `<div class="cov-controls">
+      <input id="covSearch" type="search" placeholder="Search every test — e.g. GR/IR, duplicate invoice, SE16N, payroll" value="${covEsc(covState.q)}" autocomplete="off">
+      <select id="covArea"><option value="">All process areas</option>${areas.map(a => `<option value="${covEsc(a)}"${covState.area === a ? ' selected' : ''}>${covEsc(a)}</option>`).join('')}</select>
+    </div><div class="cov-count" id="covCount"></div>`;
+}
+function covRenderResults(){
+  const holder = document.getElementById('covResults'); if(!holder) return;
+  const q = covState.q.trim().toLowerCase(); const rows = [];
+  covBooks().forEach(b => {
+    if(covState.area && b.processArea !== covState.area) return;
+    (b.execTable || []).forEach(s => {
+      const desc = covStepDesc(s.directions), code = covCode(s);
+      const hay = [b.num, b.shortname, b.subtitle, code, desc, b.processArea, (b.sapModules || []).join(' ')].join(' ').toLowerCase();
+      if(!q || hay.includes(q)) rows.push({ b, code, desc });
+    });
+  });
+  document.getElementById('covCount').textContent = rows.length + ' test step' + (rows.length === 1 ? '' : 's') + (q || covState.area ? ' match' : ' across the whole course');
+  holder.innerHTML = rows.length ? rows.map(r => `<div class="cov-test"><div class="top"><span class="cov-bnum">${covPad(r.b.num)}</span><b>${covEsc(r.b.shortname)}</b><span class="cov-chip alt">${covEsc(r.b.processArea)}</span>${(r.b.sapModules || []).map(m => `<span class="cov-chip">${covEsc(m)}</span>`).join('')}<button type="button" class="cov-open" data-open-book="${r.b.num}">Open Book →</button></div><div><span class="cov-code">${covEsc(r.code)}</span> — ${covEsc(r.desc)}</div></div>`).join('')
+    : '<div class="cov-empty">No test steps match. Try a broader term or clear the process-area filter.</div>';
+}
+function covRenderBody(){
+  const root = document.getElementById('covBody'); if(!root) return;
+  const books = covBooks();
+  document.querySelectorAll('.cov-tab').forEach(t => t.classList.toggle('active', t.dataset.covTab === covState.tab));
+  if(covState.tab === 'process') root.innerHTML = covExpandBar() + covProcessView(books);
+  else if(covState.tab === 'module') root.innerHTML = covExpandBar() + covModuleView(books);
+  else { root.innerHTML = covTestsControls(books) + '<div id="covResults"></div>'; covRenderResults(); }
+}
+function covOpenBook(n){
+  for(let p = 0; p < COURSE_DATA.length; p++){
+    const b = COURSE_DATA[p].books.findIndex(x => x.num === n);
+    if(b >= 0){ loadBook(p, b); return; }
+  }
+}
+function covBind(){
+  const root = document.getElementById('covRoot'); if(!root) return;
+  root.addEventListener('click', e => {
+    const tab = e.target.closest('[data-cov-tab]');
+    if(tab){ covState.tab = tab.dataset.covTab; covRenderBody(); return; }
+    const ob = e.target.closest('[data-open-book]');
+    if(ob){ covOpenBook(Number(ob.dataset.openBook)); return; }
+    const ex = e.target.closest('[data-cov-expand]');
+    if(ex){ const open = ex.dataset.covExpand === 'open'; root.querySelectorAll('details.cov-book').forEach(d => { d.open = open; }); }
+  });
+  root.addEventListener('input', e => { if(e.target.id === 'covSearch'){ covState.q = e.target.value; covRenderResults(); } });
+  root.addEventListener('change', e => { if(e.target.id === 'covArea'){ covState.area = e.target.value; covRenderResults(); } });
+}
+function renderCoveragePage(){
+  const books = covBooks();
+  if(!books.length){
+    return `<div class="slide"><div class="cov-page" id="covRoot"><div class="cov-eyebrow">Course Coverage Map</div><h1 class="cov-title">Coverage data isn't available yet</h1><div class="cov-empty">The process and SAP-module mapping hasn't loaded. Refresh the page; if this persists, contact your TIB administrator.</div></div></div>`;
+  }
+  const nTests = books.reduce((n,b) => n + (b.execTable || []).length, 0);
+  const nAreas = new Set(books.map(b => b.processArea)).size;
+  const nMods = new Set(books.flatMap(b => b.sapModules || []).filter(m => !COV_NON_SAP.has(m))).size;
+  const done = books.filter(b => completedBooks.has(b.num)).length;
+  const pct = Math.round(done / books.length * 100);
+  const tab = (id, label) => `<button type="button" class="cov-tab${covState.tab === id ? ' active' : ''}" data-cov-tab="${id}">${label}</button>`;
+  return `<div class="slide"><div class="cov-page" id="covRoot">
+    <div class="cov-eyebrow">Course Coverage Map</div>
+    <h1 class="cov-title">Every Test in the Course, by Process and SAP Module</h1>
+    <p class="cov-sub">Each Book tests one control area. This map lists every Book and every individual test step, grouped by the business process it belongs to (such as Procure-to-Pay or Record-to-Report) and by the SAP module it touches, and ticks off the Books you have completed. It reads from the live course content, so it always matches the Books.</p>
+    <div class="cov-stats">
+      <div class="cov-stat"><div class="n">${books.length}</div><div class="l">Books</div></div>
+      <div class="cov-stat"><div class="n">${nTests}</div><div class="l">Test steps</div></div>
+      <div class="cov-stat"><div class="n">${nAreas}</div><div class="l">Process areas</div></div>
+      <div class="cov-stat"><div class="n">${nMods}</div><div class="l">SAP modules</div></div>
+      <div class="cov-stat wide"><div class="n">${done} of ${books.length}</div><div class="l">Books you have completed</div><div class="cov-bar"><i style="width:${pct}%"></i></div></div>
+    </div>
+    <div class="cov-tabs" role="tablist">${tab('process','By process')}${tab('module','By SAP module')}${tab('tests','All tests')}</div>
+    <div id="covBody"></div>
+  </div></div>`;
+}
+function loadCoverage(){
+  stopNarration();
+  state.mode = 'coverage';
+  state.landing = false;
+  covState = { tab:'process', q:'', area:'' };   // always open on "By process"
+  document.getElementById('courseInner').innerHTML = renderCoveragePage();
+  covBind();
+  covRenderBody();
+  renderToc();
+  renderRefList(null);
+  updateBreadcrumb();
+  updateNavButtons();
+  document.getElementById('courseInner').scrollTop = 0;
+  closeToc();
+}
+window.loadCoverage = loadCoverage;
 
 function loadIntro(){
   stopNarration();
@@ -4739,6 +4977,12 @@ function renderToc(){
   overviewRow.innerHTML = `<span class="istar">📘</span><span>Course Overview</span>`;
   overviewRow.onclick = () => loadOverview();
   toc.appendChild(overviewRow);
+
+  const coverageRow = document.createElement('div');
+  coverageRow.className = 'intro-row' + (state.mode === 'coverage' ? ' active' : '');
+  coverageRow.innerHTML = `<span class="istar">🗺️</span><span>Course Coverage Map</span>`;
+  coverageRow.onclick = () => loadCoverage();
+  toc.appendChild(coverageRow);
 
   const introRow = document.createElement('div');
   introRow.className = 'intro-row' + (state.mode === 'intro' ? ' active' : '');
@@ -5233,6 +5477,12 @@ function updateBreadcrumb(){
     document.getElementById('breadcrumb').innerHTML = `<span class="prereq-tag">PREREQ</span><b>Final Exam</b>`;
     document.getElementById('progressTag').textContent = prereqPassed === true ? 'Passed' : prereqPassed === false ? 'Not yet passed' : 'Not yet attempted';
     label.textContent = 'Controls Theory Exam';
+    return;
+  }
+  if(state.mode === 'coverage'){
+    document.getElementById('breadcrumb').innerHTML = `<b>Course Coverage Map</b>`;
+    document.getElementById('progressTag').textContent = `${completedBooks.size} of ${totalBooks()} completed`;
+    label.textContent = 'Coverage Map';
     return;
   }
   if(state.mode === 'overview'){
@@ -5751,6 +6001,9 @@ function pageNarration(){
   if(state.mode === 'prereqexam'){
     return 'Controls Theory final exam. ' + EXAM_QUESTIONS.length + ' questions pooled from all ten modules.';
   }
+  if(state.mode === 'coverage'){
+    return 'Course Coverage Map. Every test in the course, grouped by business process and SAP module.';
+  }
   if(state.mode === 'overview'){
     return OVERVIEW_SLIDES.map(s => s.title + '. ' + stripToText(s.html)).join(' ');
   }
@@ -5804,6 +6057,11 @@ function updateNavButtons(){
     btnNext.disabled = true; btnNext.title = 'Use the Check Answer / Next Question buttons in the exam itself';
     return;
   }
+  if(state.mode === 'coverage'){
+    btnPrev.disabled = false; btnPrev.title = 'Back to Course Overview';
+    btnNext.disabled = false; btnNext.title = 'Continue to Course Introduction';
+    return;
+  }
   if(state.mode === 'overview'){
     btnPrev.disabled = true;
     btnNext.disabled = false; btnNext.title = 'Continue to Course Introduction';
@@ -5833,6 +6091,7 @@ function updateNavButtons(){
 function goNext(){
   stopNarration();
   if(state.mode === 'overview'){ loadIntro(); return; }
+  if(state.mode === 'coverage'){ loadIntro(); return; }
   if(state.mode === 'intro'){ loadPrereqTopic(0); return; }
   if(state.mode === 'prereq'){
     if(state.prereqIdx === PREREQ_TOPICS.length-1){ loadPrereqExam(); } else { loadPrereqTopic(state.prereqIdx+1); }
@@ -5847,6 +6106,7 @@ function goNext(){
 function goPrev(){
   stopNarration();
   if(state.mode === 'overview') return;
+  if(state.mode === 'coverage'){ loadOverview(); return; }
   if(state.mode === 'intro'){ loadOverview(); return; }
   if(state.mode === 'prereq'){
     if(state.prereqIdx === 0){ loadIntro(); } else { loadPrereqTopic(state.prereqIdx-1); }
