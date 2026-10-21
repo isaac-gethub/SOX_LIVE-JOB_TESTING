@@ -61,6 +61,12 @@
   }
   #menuToggle:hover, #fullscreenToggle:hover, #sapToggle:hover{ border-color:var(--amber); color:var(--amber); }
   #menuToggle{ display:none; } /* sidebar is permanently visible on desktop — the toggle only matters on mobile, see the 780px media query */
+  .mode-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    padding:2px 7px;border-radius:3px;margin-left:8px;vertical-align:middle;white-space:nowrap;line-height:1.5;}
+  .mode-badge.live{background:#2FBFA8;color:#12213A;}
+  .mode-badge.self{background:rgba(143,93,24,0.14);color:#8F5D18;}
+  .mode-badge.pre{background:rgba(31,107,103,0.14);color:#1F6B67;}
+  .book-row .mode-badge{margin-left:auto;font-size:9px;padding:1px 5px;}
   .elective-row{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
     padding:12px 16px; cursor:pointer; border-top:1px solid rgba(255,255,255,0.08);
@@ -4157,21 +4163,28 @@ let authMode = 'signin'; // 'signin' | 'signup'
 
 /* One-line scope description per Part, shown on that Part's intro page.
    Reuses the exact wording already used in the Course Introduction's Part table. */
+/* Live course vs self-paced Beyond the Core — set per Book in sapexec_books.delivery_mode / live_session */
+function modeBadge(book, short){
+  if (book.num >= 101) return `<span class="mode-badge pre">${short ? 'Pre' : 'Optional pre-work'}</span>`;
+  if (book.deliveryMode === 'live') return `<span class="mode-badge live">${short ? 'S' + book.liveSession : 'Live · Session ' + book.liveSession}</span>`;
+  return `<span class="mode-badge self">${short ? 'Self' : 'Beyond the Core · Self-paced'}</span>`;
+}
+
 const PART_SCOPE = {
   '0':   'Optional SAP navigation basics — logging in, reading logs, and pulling table data — for anyone starting without prior SAP experience.',
   'I':   'Who has access, and whether that access creates conflicts of duty.',
   'II':  'How system changes, backups, and interfaces are controlled.',
   'III': 'Whether financial entries are properly reviewed and approved.',
   'IV':  'Whether the automated controls tools themselves are actually working.',
-  'V':   'How findings are documented and escalated to leadership.',
-  'VI':  'Data privacy and software licensing exposure.',
+  'V':   'Beyond the Core (self-paced) — how findings are documented and escalated to leadership.',
+  'VI':  'Beyond the Core (self-paced) — data privacy and software licensing exposure.',
   'VII': 'Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended.',
   'VIII': 'Whether the order-to-cash cycle — credit release and billing cutoff — is controlled as tightly as the money already covered above.',
-  'IX':  'Treasury and tax configuration exposure most testers never get assigned until they ask for it.',
-  'X':   'The tools and methods increasingly sitting alongside native SAP GRC — third-party platforms, data analytics, and AI-assisted review.',
-  'XI':  'Elective — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.',
-  'XII': 'Elective — where a control lives, and who owns it, once the environment moves to Clean Core / RISE.',
-  'XIII': 'Whether payroll and personnel data and payments are controlled — ghost employees, pay-rate changes, off-cycle payments, and payroll-to-GL reconciliation.'
+  'IX':  'Beyond the Core (self-paced) — treasury and tax configuration exposure most testers never get assigned until they ask for it.',
+  'X':   'Beyond the Core (self-paced, introduced live in session 20) — third-party GRC platforms, data analytics, and AI-assisted review.',
+  'XI':  'Live course (sessions 11, 18–19) — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.',
+  'XII': 'Beyond the Core (self-paced) — where a control lives, and who owns it, once the environment moves to Clean Core / RISE.',
+  'XIII': 'Beyond the Core (self-paced) — whether payroll and personnel data and payments are controlled: ghost employees, pay-rate changes, off-cycle payments, and payroll-to-GL reconciliation.'
 };
 
 /* ---------- Course Overview (persuasive, scope-and-value onboarding page,
@@ -4184,7 +4197,7 @@ const OVERVIEW_SLIDES = [
     narration: 'What this course actually prepares you for.',
     html: `<p class="body-text">This is a full SOX / ITGC controls-testing course built around SAP GRC, Security, and Fiori — the same three skill areas that show up together in almost every SAP GRC/Security/Controls job posting, from entry-level through experienced hires, and rarely get taught together.</p>
            <p class="body-text">The goal isn't awareness of what SOX/ITGC testing is. It's the ability to sit down in a live SAP system on day one of a real engagement and actually do the work: run the transaction, pull the evidence, and write it up the way a reviewer expects to see it.</p>
-           <p class="body-text"><b>54 Books across 14 Parts</b> (Foundations plus 13 control domains, including Manager Track and Clean Core / RISE electives) walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
+           <p class="body-text"><b>22 live Books across 7 Parts, taught in 20 sessions</b> — plus <b>23 self-paced Beyond the Core Books</b> and 8 optional Foundations — walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
   },
   {
     kicker: 'Scope Coverage',
@@ -4192,19 +4205,19 @@ const OVERVIEW_SLIDES = [
     narration: 'Every domain a controls tester is actually assigned.',
     html: `<div class="intro-parts">
       <div class="intro-part-row"><b>Foundations (Optional)</b><span>SAP GUI/Fiori/SPRO navigation, SUIM/SU01/PFCG display, log reading (SM20/SM19/SM21), transports (STMS/SE01/SCC4), batch jobs and interfaces (SM37/WE02/BD87), GRC Access Risk Analysis and table pulls (GRAC_SPM/SE16N). (8 Books)</span></div>
-      <div class="intro-part-row"><b>Part I — Access Control &amp; Identity</b><span>Segregation of duties, role design vs. role assignment, GRC Access Risk Analysis at user level. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part II — IT General Controls: Change &amp; Operations</b><span>Emergency changes, cutovers, third-party access, untested backups, interface gaps, backdoor access. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part III — Record to Report</b><span>Whether financial entries are properly reviewed and approved. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part IV — SAP GRC Platform Modules</b><span>Whether the automated controls tools themselves are actually working. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part V — Governance, Disclosure &amp; Executive Reporting</b><span>How findings are documented and escalated to leadership. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part VII — Business Application Controls</b><span>Matching, payments, tolerances, batch jobs, and asset parameters above ITGC. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls</b><span>Credit-block release independence and billing cutoff / revenue recognition testing. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation aging, tax configuration change, FX hedge accounting, and in-house cash / intercompany netting testing. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice</b><span>Third-party GRC platforms, full-population data analytics, and GRC 2026 / AI-assisted review. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part XI — Manager Track Elective</b><span>RCM construction, design effectiveness, sampling methodology, and deficiency classification — from finding to closure. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance</b><span>Where a control lives, and who owns it, once the environment moves to Clean Core / RISE. (1 Book, elective)</span></div>
-      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls</b><span>Ghost employees, unauthorized pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part I — Access Control &amp; Identity · Live</b><span>Segregation of duties, role design vs. role assignment, GRC Access Risk Analysis at user level. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part II — IT General Controls: Change &amp; Operations · Live (4) + self-paced (2)</b><span>Emergency changes, cutovers, third-party access, untested backups, interface gaps, backdoor access. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part III — Record to Report · Live (1) + self-paced (2)</b><span>Whether financial entries are properly reviewed and approved. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part IV — SAP GRC Platform Modules · Live (1) + self-paced (1)</b><span>Whether the automated controls tools themselves are actually working. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part V — Governance, Disclosure &amp; Executive Reporting · Self-paced</b><span>How findings are documented and escalated to leadership. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope · Self-paced</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part VII — Business Application Controls · Live (5) + self-paced (1)</b><span>Matching, payments, tolerances, batch jobs, and asset parameters above ITGC. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls · Live</b><span>Credit-block release independence and billing cutoff / revenue recognition testing. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls · Self-paced</b><span>Bank reconciliation aging, tax configuration change, FX hedge accounting, and in-house cash / intercompany netting testing. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Self-paced</b><span>Third-party GRC platforms, full-population data analytics, and GRC 2026 / AI-assisted review. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part XI — Manager Track · Live</b><span>RCM construction, design effectiveness, sampling methodology, and deficiency classification — from finding to closure. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Self-paced</b><span>Where a control lives, and who owns it, once the environment moves to Clean Core / RISE. (1 Book)</span></div>
+      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls · Self-paced</b><span>Ghost employees, unauthorized pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">That's the same range of ground a consultant is expected to cover across their first several engagements — compressed into one course instead of learned engagement by engagement.</p>`,
   },
@@ -4282,19 +4295,19 @@ const INTRO_SLIDES = [
     title: 'How the Course Is Organized',
     narration: 'How the course is organized, Part by Part.',
     html: `<div class="intro-parts">
-      <div class="intro-part-row"><b>Part I — Access Control &amp; Identity</b><span>Who has access, and whether that access creates conflicts of duty. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part II — IT General Controls: Change &amp; Operations</b><span>How system changes, backups, and interfaces are controlled. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part III — Record to Report</b><span>Whether financial entries are properly reviewed and approved. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part IV — SAP GRC Platform Modules</b><span>Whether the automated controls tools themselves are actually working. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part V — Governance, Disclosure &amp; Executive Reporting</b><span>How findings are documented and escalated to leadership. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part VII — Business Application Controls</b><span>Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended. (6 Books)</span></div>
-      <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls</b><span>Whether the revenue side of the business is controlled as tightly as the money already covered above. (2 Books)</span></div>
-      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls</b><span>Bank reconciliation, tax configuration, FX hedge documentation, and intercompany cash controls. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice</b><span>Third-party GRC platforms, data analytics, and AI-assisted review. (3 Books)</span></div>
-      <div class="intro-part-row"><b>Part XI — Manager Track Elective</b><span>Turning findings into a Risk &amp; Control Matrix, a severity rating, and a defensible conclusion. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance</b><span>Where a control lives and who owns it after a move to Clean Core / RISE. (1 Book, elective)</span></div>
-      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls</b><span>Payroll master data, pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part I — Access Control &amp; Identity · Live</b><span>Who has access, and whether that access creates conflicts of duty. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part II — IT General Controls: Change &amp; Operations · Live (4) + self-paced (2)</b><span>How system changes, backups, and interfaces are controlled. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part III — Record to Report · Live (1) + self-paced (2)</b><span>Whether financial entries are properly reviewed and approved. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part IV — SAP GRC Platform Modules · Live (1) + self-paced (1)</b><span>Whether the automated controls tools themselves are actually working. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part V — Governance, Disclosure &amp; Executive Reporting · Self-paced</b><span>How findings are documented and escalated to leadership. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part VI — Legal &amp; Compliance Adjacent Scope · Self-paced</b><span>Data privacy and software licensing exposure. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part VII — Business Application Controls · Live (5) + self-paced (1)</b><span>Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended. (6 Books)</span></div>
+      <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls · Live</b><span>Whether the revenue side of the business is controlled as tightly as the money already covered above. (2 Books)</span></div>
+      <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls · Self-paced</b><span>Bank reconciliation, tax configuration, FX hedge documentation, and intercompany cash controls. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Self-paced</b><span>Third-party GRC platforms, data analytics, and AI-assisted review. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part XI — Manager Track · Live</b><span>Turning findings into a Risk &amp; Control Matrix, a severity rating, and a defensible conclusion. (4 Books)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Self-paced</b><span>Where a control lives and who owns it after a move to Clean Core / RISE. (1 Book)</span></div>
+      <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls · Self-paced</b><span>Payroll master data, pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">Each Part groups Books by the area of control they test — the same structure used in real SOX/ITGC and GRC engagements.</p>`,
   },
@@ -4715,7 +4728,7 @@ function loadPartIntro(pIdx){
   const scope = PART_SCOPE[part.numeral] || '';
   const partLabel = part.title.split(' (Books')[0];
   const bookRows = part.books.map(b =>
-    `<div class="partintro-book-row"><span class="bnum">${String(b.num).padStart(2,'0')}</span><span>${b.shortname}</span></div>`
+    `<div class="partintro-book-row"><span class="bnum">${String(b.num).padStart(2,'0')}</span><span>${b.shortname}</span>${modeBadge(b)}</div>`
   ).join('');
   document.getElementById('courseInner').innerHTML = `<div class="slide"><div class="partintro-page">
     <div class="partintro-numeral">${part.numeral}</div>
@@ -4885,7 +4898,7 @@ function renderIntroPage(){
 
 function renderBookPage(book){
   let html = `
-    <div class="book-tab"><span class="n">Book ${pad(book.num)}</span> — Field Manual</div>
+    <div class="book-tab"><span class="n">Book ${pad(book.num)}</span> — Field Manual ${modeBadge(book)}</div>
     <div class="book-identity-row">
       <h1 class="book-title">${book.shortname}</h1>
       <p class="book-subtitle">${book.subtitle}</p>
@@ -5046,7 +5059,7 @@ function renderToc(){
       const row = document.createElement('div');
       row.className = 'book-row' + (bookModeActive && pIdx===state.partIdx && bIdx===state.bookIdx ? ' active' : '');
       const check = completedBooks.has(book.num) ? '<span class="checkmark">✓</span>' : '';
-      row.innerHTML = `<span class="bnum">${String(book.num).padStart(2,'0')}</span><span>${book.shortname}</span>${check}`;
+      row.innerHTML = `<span class="bnum">${String(book.num).padStart(2,'0')}</span><span>${book.shortname}</span>${modeBadge(book, true)}${check}`;
       row.onclick = () => loadBook(pIdx, bIdx);
       books.appendChild(row);
     });

@@ -42,6 +42,8 @@ export async function fetchCourseData() {
       processGroup: row.process_group || null,
       secondaryProcess: row.secondary_process || [],
       sapModules: row.sap_modules || [],
+      deliveryMode: row.delivery_mode || 'live',
+      liveSession: row.live_session || null,
     });
   }
   return parts;
