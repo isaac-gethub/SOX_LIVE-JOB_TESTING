@@ -66,6 +66,8 @@
   .mode-badge.live{background:#2FBFA8;color:#12213A;}
   .mode-badge.self{background:rgba(143,93,24,0.14);color:#8F5D18;}
   .mode-badge.pre{background:rgba(31,107,103,0.14);color:#1F6B67;}
+  .mode-badge.adv{background:#F0A868;color:#12213A;}
+  .mode-badge.guided{background:#9ED9CF;color:#12213A;}
   .book-row .mode-badge{margin-left:auto;font-size:9px;padding:1px 5px;}
   .elective-row{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
@@ -4163,27 +4165,32 @@ let authMode = 'signin'; // 'signin' | 'signup'
 
 /* One-line scope description per Part, shown on that Part's intro page.
    Reuses the exact wording already used in the Course Introduction's Part table. */
-/* Live course vs self-paced Beyond the Core — set per Book in sapexec_books.delivery_mode / live_session */
+/* Two levels (from Jan 2027) — set per Book in sapexec_books.course_level / study_mode / live_session */
 function modeBadge(book, short){
   if (book.num >= 101) return `<span class="mode-badge pre">${short ? 'Pre' : 'Optional pre-work'}</span>`;
-  if (book.deliveryMode === 'live') return `<span class="mode-badge live">${short ? 'S' + book.liveSession : 'Live · Session ' + book.liveSession}</span>`;
+  if (book.courseLevel === 'intermediate' && book.studyMode === 'self_study')
+    return `<span class="mode-badge guided">${short ? 'Int·G' : 'Intermediate · Guided self-study'}</span>`;
+  if (book.courseLevel === 'intermediate' && book.liveSession)
+    return `<span class="mode-badge live">${short ? 'I' + book.liveSession : 'Intermediate · Session ' + book.liveSession}</span>`;
+  if (book.courseLevel === 'advanced' && book.liveSession)
+    return `<span class="mode-badge adv">${short ? 'A' + book.liveSession : 'Advanced · Session ' + book.liveSession}</span>`;
   return `<span class="mode-badge self">${short ? 'Self' : 'Beyond the Core · Self-paced'}</span>`;
 }
 
 const PART_SCOPE = {
   '0':   'Optional SAP navigation basics — logging in, reading logs, and pulling table data — for anyone starting without prior SAP experience.',
-  'I':   'Who has access, and whether that access creates conflicts of duty.',
-  'II':  'How system changes, backups, and interfaces are controlled.',
-  'III': 'Whether financial entries are properly reviewed and approved.',
-  'IV':  'Whether the automated controls tools themselves are actually working.',
+  'I':   'Intermediate (sessions 2–6) — who has access, and whether that access creates conflicts of duty.',
+  'II':  'Intermediate (sessions 7–9) — how system changes, backups, and interfaces are controlled.',
+  'III': 'Intermediate (session 11) — whether financial entries are properly reviewed and approved.',
+  'IV':  'Intermediate (session 10) — whether the automated controls tools themselves are actually working.',
   'V':   'Beyond the Core (self-paced) — how findings are documented and escalated to leadership.',
   'VI':  'Beyond the Core (self-paced) — data privacy and software licensing exposure.',
-  'VII': 'Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended.',
-  'VIII': 'Whether the order-to-cash cycle — credit release and billing cutoff — is controlled as tightly as the money already covered above.',
+  'VII': 'Intermediate (sessions 12–14) — whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended.',
+  'VIII': 'Intermediate (sessions 15–16) — whether the order-to-cash cycle — credit release and billing cutoff — is controlled as tightly as the money already covered above.',
   'IX':  'Beyond the Core (self-paced) — treasury and tax configuration exposure most testers never get assigned until they ask for it.',
-  'X':   'Beyond the Core (self-paced, introduced live in session 20) — third-party GRC platforms, data analytics, and AI-assisted review.',
-  'XI':  'Live course (sessions 11, 18–19) — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.',
-  'XII': 'Beyond the Core (self-paced) — where a control lives, and who owns it, once the environment moves to Clean Core / RISE.',
+  'X':   'Advanced (sessions 7–9) — third-party GRC platforms, data analytics, and AI-assisted review.',
+  'XI':  'Advanced (sessions 2–6) — how a manager turns a stack of findings into a Risk & Control Matrix, a severity rating, and a defensible conclusion.',
+  'XII': 'Advanced (session 10) — where a control lives, and who owns it, once the environment moves to Clean Core / RISE.',
   'XIII': 'Beyond the Core (self-paced) — whether payroll and personnel data and payments are controlled: ghost employees, pay-rate changes, off-cycle payments, and payroll-to-GL reconciliation.'
 };
 
@@ -4197,7 +4204,7 @@ const OVERVIEW_SLIDES = [
     narration: 'What this course actually prepares you for.',
     html: `<p class="body-text">This is a full SOX / ITGC controls-testing course built around SAP GRC, Security, and Fiori — the same three skill areas that show up together in almost every SAP GRC/Security/Controls job posting, from entry-level through experienced hires, and rarely get taught together.</p>
            <p class="body-text">The goal isn't awareness of what SOX/ITGC testing is. It's the ability to sit down in a live SAP system on day one of a real engagement and actually do the work: run the transaction, pull the evidence, and write it up the way a reviewer expects to see it.</p>
-           <p class="body-text"><b>22 live Books across 7 Parts, taught in 20 sessions</b> — plus <b>23 self-paced Beyond the Core Books</b> and 8 optional Foundations — walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
+           <p class="body-text"><b>two levels — 19 Intermediate Books in 16 sessions and 8 Advanced Books in 12 sessions</b> — plus <b>19 self-paced Beyond the Core Books</b> and 8 optional Foundations — walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
   },
   {
     kicker: 'Scope Coverage',

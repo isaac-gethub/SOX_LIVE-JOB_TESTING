@@ -44,6 +44,8 @@ export async function fetchCourseData() {
       sapModules: row.sap_modules || [],
       deliveryMode: row.delivery_mode || 'live',
       liveSession: row.live_session || null,
+      courseLevel: row.course_level || null,
+      studyMode: row.study_mode || null,
     });
   }
   return parts;
