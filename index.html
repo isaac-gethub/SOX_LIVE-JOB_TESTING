@@ -954,6 +954,14 @@
 
   /* ===== System Admin panel ===== */
   .admin-wrap{ max-width:760px; }
+  .docs-wrap{ max-width:820px; }
+  .doc-group{ margin:22px 0 8px; font-weight:700; font-size:15px; color:var(--navy, #1B3358); }
+  .doc-link{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 14px; border:1px solid rgba(0,0,0,0.12); border-radius:8px; margin-bottom:8px; background:#fff; color:inherit; text-decoration:none; cursor:pointer; }
+  .doc-link:hover{ border-color:var(--amber, #B8862F); }
+  .doc-link small{ display:block; color:#667085; font-size:12.5px; margin-top:2px; }
+  .doc-link .dl{ font-size:12px; font-weight:700; white-space:nowrap; }
+  .pack-link{ display:inline-block; margin:6px 0 2px; font-size:13px; font-weight:700; text-decoration:none; padding:5px 10px; border:1px solid currentColor; border-radius:6px; }
+  @media (max-width:600px){ .doc-link{ flex-direction:column; align-items:flex-start; } }
   .admin-form{
     background:var(--paper-2); border:1px solid var(--line); border-radius:6px;
     padding:24px; margin-bottom:32px;
@@ -4915,6 +4923,7 @@ function renderIntroPage(){
 function renderBookPage(book){
   let html = `
     <div class="book-tab"><span class="n">Book ${pad(book.num)}</span> — Field Manual ${modeBadge(book)}</div>
+    ${(() => { const pk = packFor(book); return pk ? `<a class="pack-link" href="${pk.href}" download>${pk.label} ↓</a>` : ''; })()}
     <div class="book-identity-row">
       <h1 class="book-title">${book.shortname}</h1>
       <p class="book-subtitle">${book.subtitle}</p>
@@ -5192,6 +5201,13 @@ function renderToc(){
     toc.appendChild(partDiv);
   });
 
+  const matRow = document.createElement('div');
+  matRow.className = 'elective-row' + (state.mode === 'materials' ? ' active' : '');
+  matRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--teal);border-color:var(--teal);">DOCS</span>&nbsp;&nbsp;Course Materials</span><span class="eout">📁</span>`;
+  matRow.title = 'Handbook, User Guide, Reading Packs, templates and assessment briefs';
+  matRow.onclick = () => loadMaterials();
+  toc.appendChild(matRow);
+
   const libraryRow = document.createElement('div');
   libraryRow.className = 'elective-row';
   libraryRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--teal);border-color:var(--teal);">LIBRARY</span>&nbsp;&nbsp;Evidence &amp; Templates</span><span class="eout">📄</span>`;
@@ -5199,11 +5215,18 @@ function renderToc(){
   libraryRow.onclick = () => openLibraryModal();
   toc.appendChild(libraryRow);
 
+  const instRow = document.createElement('div');
+  instRow.className = 'elective-row' + (state.mode === 'instdocs' ? ' active' : '');
+  instRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--red-bright);border-color:var(--red-bright);">STAFF</span>&nbsp;&nbsp;Instructor Documents</span><span class="eout">🔒</span>`;
+  instRow.title = 'Instructors only — requires the instructor login';
+  instRow.onclick = () => openAdminReauth('docs');
+  toc.appendChild(instRow);
+
   const adminRow = document.createElement('div');
   adminRow.className = 'elective-row' + (state.mode === 'admin' ? ' active' : '');
   adminRow.innerHTML = `<span class="elabel"><span class="etag" style="color:var(--red-bright);border-color:var(--red-bright);">ADMIN</span>&nbsp;&nbsp;System Admin</span><span class="eout">⚙</span>`;
   adminRow.title = 'System administrator tools — requires re-confirming the admin login';
-  adminRow.onclick = () => openAdminReauth();
+  adminRow.onclick = () => openAdminReauth('admin');
   toc.appendChild(adminRow);
 
   requestAnimationFrame(updateTocScrollHint);
@@ -5218,6 +5241,103 @@ function updateTocScrollHint(){
 }
 window.addEventListener('resize', updateTocScrollHint);
 document.getElementById('toc').addEventListener('scroll', updateTocScrollHint);
+
+const MATERIALS = [
+  ['Start here', [
+    ['00-start-here/Student-Handbook-START-HERE.docx', 'Student Handbook — Start Here', 'The map of the whole course: sessions, graded work, rules and certificates'],
+    ['00-start-here/Trainee-User-Guide-Start-to-Finish.docx', 'Trainee User Guide — Start to Finish', 'How to use this app session by session, live or as self-study'],
+    ['00-start-here/TIB-FS-STU-010_Beyond-the-Core-Library-Index.docx', 'Beyond the Core Library Index', 'The 19 self-paced Books outside the two levels'],
+  ]],
+  ['Before session 1', [
+    ['01-pre-class/TIB-TRN-PREREQ-SAP-FOUNDATIONS-001.pdf', 'SAP Foundations', 'Pre-class reader'],
+    ['01-pre-class/TIB-TRN-PREREQ-SAP-SECURITY-CONTROLS-002.pdf', 'SAP Security & Controls', 'Pre-class reader'],
+    ['01-pre-class/TIB-TRN-PREREQ-SAP-APPS-LANDSCAPE-003.pdf', 'SAP Applications Landscape', 'Pre-class reader'],
+    ['01-pre-class/Pre-Class-Reading-Plan-8-Days.docx', 'Pre-Class Reading Plan', 'An eight-day plan for the readers above'],
+  ]],
+  ['Templates — use every session', [
+    ['02-templates/Planning-Card-Template.docx', 'Planning Card', 'Fill in before you open a transaction'],
+    ['02-templates/Workpaper-Template-and-Standard.docx', 'Workpaper Template and Standard', 'For Workpapers 1–3'],
+    ['02-templates/Question-Submission-Template.docx', 'Question Submission Template', 'Send questions 24 hours before a class'],
+  ]],
+  ['Reading Packs — read each session\'s section before that session', [
+    ['03-reading-packs/Reading-Pack-Intermediate-Week-1-Sessions-1-4.docx', 'Intermediate · Week 1', 'Sessions 1–4'],
+    ['03-reading-packs/Reading-Pack-Intermediate-Week-2-Sessions-5-8.docx', 'Intermediate · Week 2', 'Sessions 5–8'],
+    ['03-reading-packs/Reading-Pack-Intermediate-Week-3-Sessions-9-12.docx', 'Intermediate · Week 3', 'Sessions 9–12'],
+    ['03-reading-packs/Reading-Pack-Intermediate-Week-4-Sessions-13-16.docx', 'Intermediate · Week 4', 'Sessions 13–16'],
+    ['03-reading-packs/Reading-Pack-Advanced-Week-1-Sessions-1-4.docx', 'Advanced · Week 1', 'Sessions 1–4'],
+    ['03-reading-packs/Reading-Pack-Advanced-Week-2-Sessions-5-8.docx', 'Advanced · Week 2', 'Sessions 5–8'],
+    ['03-reading-packs/Reading-Pack-Advanced-Week-3-Sessions-9-12.docx', 'Advanced · Week 3', 'Sessions 9–12'],
+  ]],
+  ['Assessment briefs', [
+    ['05-assessment/TIB-FS-ASSESS-001_Workpaper-Briefs-1-3.docx', 'Workpaper Briefs 1–3', 'Intermediate · set in sessions 6, 9 and 13'],
+    ['05-assessment/TIB-FS-ASSESS-004A_Midpoint-RCM-Exercise_Trainee-Copy.docx', 'Thornfield RCM Exercise', 'Advanced · session 3'],
+    ['05-assessment/TIB-FS-ASSESS-005_Stakeholder-Panel-Brief.docx', 'Stakeholder Panel Brief', 'Advanced · sessions 11–12'],
+  ]],
+];
+function packFor(book){
+  let level = book.courseLevel, s = book.liveSession;
+  if(!level || !SESSION_PLAN[level]) return null;
+  if(!s){ const sd = SESSION_PLAN[level].selfDue; for(const k in sd){ if(sd[k].includes(book.num)) s = +k; } }
+  if(!s) return null;
+  const w = Math.ceil(s / 4), a = 4 * w - 3, b = 4 * w;
+  const lab = level === 'intermediate' ? 'Intermediate' : 'Advanced';
+  return { href: `materials/03-reading-packs/Reading-Pack-${lab}-Week-${w}-Sessions-${a}-${b}.docx`, label: `📖 Reading Pack — ${lab} Week ${w}, Session ${s} section` };
+}
+function loadMaterials(){
+  stopNarration();
+  state.mode = 'materials';
+  let html = `<div class="slide docs-wrap"><div class="book-tab"><span class="n">COURSE MATERIALS</span></div>
+    <h1 class="book-title">Course Materials</h1>
+    <p class="body-text">Every document you need for the course. Your instructor will not email files — open them here. Each Book page also links straight to its Reading Pack.</p>`;
+  MATERIALS.forEach(([g, items]) => {
+    html += `<div class="doc-group">${g}</div>`;
+    items.forEach(([path, title, note]) => {
+      html += `<a class="doc-link" href="materials/${path}" download><span><b>${title}</b><small>${note}</small></span><span class="dl">Download ↓</span></a>`;
+    });
+  });
+  document.getElementById('courseInner').innerHTML = html + '</div>';
+  renderToc(); renderRefList(null); updateBreadcrumb(); updateNavButtons();
+  document.getElementById('courseInner').scrollTop = 0; closeToc();
+}
+window.loadMaterials = loadMaterials;
+
+const INSTRUCTOR_DOC_NOTES = {
+  'TIB-FS-INST-001_Instructor-Delivery-Schedule_V3.docx': ['Instructor Delivery Schedule', 'Class-by-class delivery for all 28 sessions — follow it exactly'],
+  'TIB-FS-ASSESS-002_Marking-Guide_V2.docx': ['Marking Guide', 'Score bands, resubmit triggers, recording'],
+  'TIB-FS-ASSESS-003_Defend-It-Facilitator-Guide_V2.docx': ['Defend It Facilitator Guide', 'Format, question bank, scoring sheet'],
+  'TIB-FS-ASSESS-004_Thornfield-RCM-Exercise-Facilitator-Copy_V2.docx': ['Thornfield RCM Exercise — facilitator copy', 'Part B indicative attributes — never share'],
+  'TIB-TRN-STUDYGUIDE-JUNIOR-FACILITATOR-001.docx': ['Junior Facilitator Study Guide', 'Background and model reasoning'],
+  'TIB_Course1_Slide_Deck_V3.pptx': ['Course 1 slide deck', 'Intermediate S1 and Advanced S1'],
+};
+let staffReauthed = false;
+async function loadInstructorDocs(){
+  if(!staffReauthed && !adminReauthed) return;
+  stopNarration();
+  state.mode = 'instdocs';
+  const inner = document.getElementById('courseInner');
+  inner.innerHTML = `<div class="slide docs-wrap"><div class="book-tab"><span class="n">INSTRUCTORS ONLY</span></div><h1 class="book-title">Instructor Documents</h1><p class="body-text">Loading…</p></div>`;
+  renderToc(); renderRefList(null); updateBreadcrumb(); updateNavButtons(); closeToc();
+  const { data, error } = await adminSupabase.storage.from('instructor-docs').list('c1', { sortBy: { column: 'name', order: 'asc' } });
+  let html = `<div class="slide docs-wrap"><div class="book-tab"><span class="n">INSTRUCTORS ONLY</span></div>
+    <h1 class="book-title">Instructor Documents</h1>
+    <p class="body-text">Staff only. Each link works for five minutes. Do not forward these files, post them in chat or keep copies outside the app.</p>`;
+  if(error || !data || !data.length){
+    html += `<div class="admin-msg error">${error ? htmlEscape(error.message) : 'No documents are available to this account.'}</div>`;
+  } else {
+    data.filter(f => f.name && !f.name.startsWith('.')).forEach(f => {
+      const n = INSTRUCTOR_DOC_NOTES[f.name] || [f.name, ''];
+      html += `<div class="doc-link" onclick="openInstructorDoc('${f.name.replace(/'/g, '')}')"><span><b>${htmlEscape(n[0])}</b><small>${htmlEscape(n[1])}</small></span><span class="dl">Open ↓</span></div>`;
+    });
+  }
+  inner.innerHTML = html + '</div>';
+}
+window.loadInstructorDocs = loadInstructorDocs;
+async function openInstructorDoc(name){
+  const { data, error } = await adminSupabase.storage.from('instructor-docs').createSignedUrl('c1/' + name, 300, { download: name });
+  if(error || !data){ alert('Could not open the document. Sign in again from Instructor Documents.'); return; }
+  window.location.href = data.signedUrl;
+}
+window.openInstructorDoc = openInstructorDoc;
 
 const ADMIN_EMAIL = 'qa.portal@tib-systems.com';
 function isAdminUser(){
@@ -5235,14 +5355,17 @@ const adminSupabase = _createAdminClient(
 );
 let adminReauthed = false; // reset on every page load — re-confirming is required once per visit, not every click
 
-function openAdminReauth(){
-  if(adminReauthed){ loadAdmin(); return; }
+let reauthPurpose = 'admin';
+function openAdminReauth(purpose){
+  reauthPurpose = purpose === 'docs' ? 'docs' : 'admin';
+  if(reauthPurpose === 'docs' && (staffReauthed || adminReauthed)){ loadInstructorDocs(); return; }
+  if(reauthPurpose === 'admin' && adminReauthed){ loadAdmin(); return; }
   const overlay = document.createElement('div');
   overlay.className = 'admin-reauth-overlay';
   overlay.innerHTML = `
     <div class="admin-reauth-card">
-      <h2>Confirm Admin Login</h2>
-      <p class="body-text">System Admin is visible to everyone, but re-enter the administrator's own email and password to actually open it. This is separate from your signed-in session — your own course progress is never affected.</p>
+      <h2>${reauthPurpose === 'docs' ? 'Instructor Login' : 'Confirm Admin Login'}</h2>
+      <p class="body-text">${reauthPurpose === 'docs' ? 'Instructor Documents are for course staff only. Sign in with your instructor email and password.' : "System Admin is visible to everyone, but re-enter the administrator's own email and password to actually open it."} This is separate from your signed-in session — your own course progress is never affected.</p>
       <div class="admin-field">
         <label for="reauthEmail">Admin Email</label>
         <input type="email" id="reauthEmail" placeholder="admin@example.com" autocomplete="off">
@@ -5288,6 +5411,20 @@ async function submitAdminReauth(){
       return;
     }
     const signedInEmail = (data?.user?.email || '').trim().toLowerCase();
+    if(reauthPurpose === 'docs'){
+      const { data: ok } = await adminSupabase.rpc('is_course_staff', { p_course: 'C1' });
+      if(!ok){
+        await adminSupabase.auth.signOut();
+        msgEl.innerHTML = `<div class="admin-msg error">Access denied.</div>`;
+        btn.disabled = false; btn.textContent = 'Confirm';
+        return;
+      }
+      staffReauthed = true;
+      if(signedInEmail === ADMIN_EMAIL) adminReauthed = true;
+      closeAdminReauth();
+      loadInstructorDocs();
+      return;
+    }
     if(signedInEmail !== ADMIN_EMAIL){
       // Valid login, just not the admin account — sign this isolated client back out
       // and give a generic message rather than confirming/denying whose email this is.
@@ -5614,6 +5751,13 @@ function totalBooks(){ return COURSE_DATA.reduce((a,p)=>a+p.books.length,0); }
 
 function updateBreadcrumb(){
   const label = document.getElementById('slideLabel');
+  if(state.mode === 'materials' || state.mode === 'instdocs'){
+    const t = state.mode === 'materials' ? 'Course Materials' : 'Instructor Documents';
+    document.getElementById('breadcrumb').innerHTML = `<b>${t}</b>`;
+    document.getElementById('progressTag').textContent = state.mode === 'materials' ? 'Documents' : 'Staff Only';
+    label.textContent = t;
+    return;
+  }
   if(state.mode === 'admin'){
     document.getElementById('breadcrumb').innerHTML = `<span class="prereq-tag" style="color:var(--red-bright);border-color:var(--red-bright);">ADMIN</span><b>System Admin</b>`;
     document.getElementById('progressTag').textContent = 'Staff Only';
@@ -6197,7 +6341,7 @@ function pageNarration(){
 function updateNavButtons(){
   const btnPrev = document.getElementById('btnPrev');
   const btnNext = document.getElementById('btnNext');
-  if(state.mode === 'admin'){
+  if(state.mode === 'admin' || state.mode === 'materials' || state.mode === 'instdocs'){
     btnPrev.disabled = true; btnNext.disabled = true;
     return;
   }
