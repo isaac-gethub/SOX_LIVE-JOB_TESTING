@@ -144,6 +144,15 @@
     min-width:20px;
   }
   nav.toc .book-row .bdone{ margin-left:auto; color:var(--teal); font-size:12px; }
+  /* By session / By Part switch */
+  nav.toc .view-switch{ display:flex; gap:4px; margin:8px 8px 10px; background:rgba(255,255,255,0.06); border-radius:6px; padding:3px; }
+  nav.toc .view-switch button{ flex:1; border:0; background:none; color:#AFC0DA; font:inherit; font-size:12px; font-weight:700; padding:6px 4px; border-radius:4px; cursor:pointer; }
+  nav.toc .view-switch button.on{ background:var(--amber-deep); color:#fff; }
+  nav.toc .book-row.plain{ cursor:default; color:#8FA0BC; font-style:italic; }
+  nav.toc .book-row.plain:hover{ background:none; color:#8FA0BC; }
+  nav.toc .book-row.selfstudy{ padding-left:30px; font-size:12px; }
+  nav.toc .book-row .snum{ font-weight:800; color:var(--amber); min-width:30px; display:inline-block; }
+  nav.toc .lib-link{ font-size:12px; color:#AFC0DA; padding:8px 14px; cursor:pointer; text-decoration:underline; }
 
   main.workspace{ flex:1; display:flex; min-width:0; }
 
@@ -4988,9 +4997,94 @@ function prevBookCoords(pIdx, bIdx){
   return null;
 }
 
+/* Session-order view: built from sapexec_books.course_level / live_session.
+   Sessions without a Book, and when each guided self-study Book is due, come from the session plan. */
+const SESSION_PLAN = {
+  intermediate: { label: 'Intermediate', total: 16, plain: { 1: 'Kickoff — evidence discipline, SAP access check' },
+                  selfDue: { 3: [4], 8: [18], 10: [23], 14: [27] } },
+  advanced:     { label: 'Advanced', total: 12, plain: { 1: 'Bridge — entry check and engagement brief', 3: 'RCM workshop — finish the Thornfield RCM',
+                  11: 'Capstone — Audit Committee readout', 12: 'Stakeholder panel and close' }, selfDue: {} },
+};
+let tocView = 'session';
+try { tocView = localStorage.getItem('fsTocView') || 'session'; } catch(e) {}
+const tocOpenLevels = new Set();
+
+function findBookPos(pred){
+  for(let p = 0; p < COURSE_DATA.length; p++){
+    const b = COURSE_DATA[p].books.findIndex(pred);
+    if(b > -1) return [p, b];
+  }
+  return null;
+}
+
+function renderSessionView(toc, bookModeActive){
+  const current = bookModeActive ? COURSE_DATA[state.partIdx]?.books[state.bookIdx] : null;
+  if(!tocOpenLevels.size) tocOpenLevels.add(current && current.courseLevel === 'advanced' ? 'advanced' : 'intermediate');
+  Object.entries(SESSION_PLAN).forEach(([level, plan]) => {
+    const group = document.createElement('div');
+    group.className = 'part' + (tocOpenLevels.has(level) ? ' open' : '');
+    const head = document.createElement('div');
+    head.className = 'part-head' + (current && current.courseLevel === level ? ' active-part' : '');
+    head.innerHTML = `<span class="roman">${level === 'intermediate' ? 'INT' : 'ADV'}</span><span>${plan.label} · ${plan.total} sessions</span><span class="chev">▶</span>`;
+    head.onclick = () => { tocOpenLevels.has(level) ? tocOpenLevels.delete(level) : tocOpenLevels.add(level); renderToc(); };
+    group.appendChild(head);
+    const rows = document.createElement('div');
+    rows.className = 'books';
+    for(let s = 1; s <= plan.total; s++){
+      const pos = findBookPos(b => b.courseLevel === level && b.liveSession === s);
+      const row = document.createElement('div');
+      if(pos){
+        const book = COURSE_DATA[pos[0]].books[pos[1]];
+        const active = current && current.num === book.num;
+        row.className = 'book-row' + (active ? ' active' : '');
+        const check = completedBooks.has(book.num) ? '<span class="checkmark">✓</span>' : '';
+        row.innerHTML = `<span class="snum">S${s}</span><span class="bnum">${String(book.num).padStart(2,'0')}</span><span>${book.shortname}</span>${check}`;
+        row.title = `Session ${s} · Book ${book.num} · Part ${COURSE_DATA[pos[0]].numeral}`;
+        row.onclick = () => loadBook(pos[0], pos[1]);
+      } else {
+        row.className = 'book-row plain';
+        row.innerHTML = `<span class="snum">S${s}</span><span>${plan.plain[s] || 'Live session'}</span>`;
+      }
+      rows.appendChild(row);
+      (plan.selfDue[s] || []).forEach(num => {
+        const sp = findBookPos(b => b.num === num);
+        if(!sp) return;
+        const sb = COURSE_DATA[sp[0]].books[sp[1]];
+        const r2 = document.createElement('div');
+        const active = current && current.num === sb.num;
+        r2.className = 'book-row selfstudy' + (active ? ' active' : '');
+        const check = completedBooks.has(sb.num) ? '<span class="checkmark">✓</span>' : '';
+        r2.innerHTML = `<span>↳ ${String(sb.num).padStart(2,'0')} ${sb.shortname} · self-study</span>${check}`;
+        r2.title = `Guided self-study — set with session ${s}, checked at the start of the next class`;
+        r2.onclick = () => loadBook(sp[0], sp[1]);
+        rows.appendChild(r2);
+      });
+    }
+    group.appendChild(rows);
+    toc.appendChild(group);
+  });
+  const lib = document.createElement('div');
+  lib.className = 'lib-link';
+  lib.textContent = 'Beyond the Core library and every Book by Part →';
+  lib.onclick = () => setTocView('part');
+  toc.appendChild(lib);
+}
+
+function setTocView(v){
+  tocView = v;
+  try { localStorage.setItem('fsTocView', v); } catch(e) {}
+  renderToc();
+}
+
 function renderToc(){
   const toc = document.getElementById('toc');
   toc.innerHTML = '';
+
+  const sw = document.createElement('div');
+  sw.className = 'view-switch';
+  sw.innerHTML = `<button type="button" class="${tocView === 'session' ? 'on' : ''}" data-v="session">By session</button><button type="button" class="${tocView === 'part' ? 'on' : ''}" data-v="part">By Part</button>`;
+  sw.querySelectorAll('button').forEach(b => b.onclick = () => setTocView(b.dataset.v));
+  toc.appendChild(sw);
 
   const overviewRow = document.createElement('div');
   overviewRow.className = 'intro-row' + (state.mode === 'overview' ? ' active' : '');
@@ -5049,7 +5143,8 @@ function renderToc(){
   const bookModeActive = state.mode === 'book' || state.mode === 'transition';
   const partIntroActive = state.mode === 'partintro';
 
-  COURSE_DATA.forEach((part, pIdx) => {
+  if(tocView === 'session') renderSessionView(toc, bookModeActive);
+  else COURSE_DATA.forEach((part, pIdx) => {
     const partDiv = document.createElement('div');
     partDiv.className = 'part' + (pIdx === state.partIdx && (bookModeActive || partIntroActive) ? ' open' : '');
     partDiv.dataset.idx = pIdx;
