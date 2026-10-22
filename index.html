@@ -4985,13 +4985,36 @@ function renderBookPage(book){
   return `<div class="slide">${html}</div>`;
 }
 
+/* In the By session view, Next / Previous follow session order (live Books, with each
+   guided self-study Book right after the session it is set with). By Part view keeps Part order. */
+function sessionSequence(level){
+  const plan = SESSION_PLAN[level]; if(!plan) return [];
+  const seq = [];
+  for(let s = 1; s <= plan.total; s++){
+    const pos = findBookPos(b => b.courseLevel === level && b.liveSession === s);
+    if(pos) seq.push(pos);
+    (plan.selfDue[s] || []).forEach(num => { const sp = findBookPos(b => b.num === num); if(sp) seq.push(sp); });
+  }
+  return seq;
+}
+function sessionStep(pIdx, bIdx, dir){
+  if(tocView !== 'session') return undefined;
+  const book = COURSE_DATA[pIdx]?.books[bIdx];
+  if(!book || !SESSION_PLAN[book.courseLevel]) return undefined;
+  const seq = sessionSequence(book.courseLevel);
+  const i = seq.findIndex(([p, b]) => p === pIdx && b === bIdx);
+  if(i < 0) return undefined;
+  return seq[i + dir] || null;
+}
 function nextBookCoords(pIdx, bIdx){
+  const ss = sessionStep(pIdx, bIdx, 1); if(ss !== undefined) return ss;
   const part = COURSE_DATA[pIdx];
   if(bIdx < part.books.length-1) return [pIdx, bIdx+1];
   if(pIdx < COURSE_DATA.length-1) return [pIdx+1, 0];
   return null;
 }
 function prevBookCoords(pIdx, bIdx){
+  const ss = sessionStep(pIdx, bIdx, -1); if(ss !== undefined) return ss;
   if(bIdx > 0) return [pIdx, bIdx-1];
   if(pIdx > 0){ const pp = pIdx-1; return [pp, COURSE_DATA[pp].books.length-1]; }
   return null;
@@ -5506,7 +5529,7 @@ function loadBook(pIdx, bIdx){
 window.loadBook = loadBook;
 
 function continueToNext(){
-  if(state.nextPartIdx !== state.partIdx){
+  if(state.nextPartIdx !== state.partIdx && tocView !== 'session'){
     loadPartIntro(state.nextPartIdx);
   } else {
     loadBook(state.nextPartIdx, state.nextBookIdx);
@@ -5523,7 +5546,7 @@ function showTransition(pIdx, bIdx){
   }
   state.partIdx = pIdx; state.bookIdx = bIdx; // keep pointing at the just-completed book for TOC highlighting
   const next = nextBookCoords(pIdx, bIdx);
-  if(!next){ showComplete(); return; }
+  if(!next){ showComplete(tocView === 'session' && SESSION_PLAN[book.courseLevel] ? book.courseLevel : null); return; }
   state.mode = 'transition';
   state.nextPartIdx = next[0]; state.nextBookIdx = next[1];
   const nb = COURSE_DATA[next[0]].books[next[1]];
@@ -5549,9 +5572,25 @@ function showTransition(pIdx, bIdx){
   closeToc();
 }
 
-function showComplete(){
+function showComplete(level){
   stopNarration();
   state.mode = 'complete';
+  if(level){
+    const seq = sessionSequence(level);
+    const done = seq.filter(([p, b]) => completedBooks.has(COURSE_DATA[p].books[b].num)).length;
+    const nextStep = level === 'intermediate'
+      ? 'Next: the Advanced level. Open <b>Advanced · 12 sessions</b> in the menu, or browse the Beyond the Core library under <b>By Part</b>.'
+      : 'Next: finish your capstone and stakeholder panel (sessions 11 and 12), then browse the Beyond the Core library under <b>By Part</b>.';
+    document.getElementById('courseInner').innerHTML = `<div class="slide"><div class="complete-page">
+    <div class="trophy">🏅</div>
+    <h1>${SESSION_PLAN[level].label} Books Complete</h1>
+    <p>You have worked through the last Book of the ${SESSION_PLAN[level].label} level — ${done} of ${seq.length} ${SESSION_PLAN[level].label} Books marked complete.</p>
+    <p>${nextStep}</p>
+    <button class="cta-start" onclick="loadIntro()">Back to Course Introduction</button>
+  </div></div>`;
+    renderToc(); renderRefList(null); updateBreadcrumb(); updateNavButtons(); closeToc();
+    return;
+  }
   document.getElementById('courseInner').innerHTML = `<div class="slide"><div class="complete-page">
     <div class="trophy">🏅</div>
     <h1>Course Complete</h1>
