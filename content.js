@@ -1,5 +1,5 @@
 // ============================================================================
-// TIB Systems — SAP Testing Execution Guide | Course 1 (Thornfield Industrial Group)
+// TIB Systems — The Full Sweep | Course 1 (Thornfield Industrial Group)
 // Supabase-backed content, auth, and progress module
 // Project: blfgwysgekfqhcafofhe  (tables: sapexec_books, sapexec_enrollments, sapexec_progress, sapexec_resource_library)
 // ============================================================================

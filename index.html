@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TIB Systems — SAP Testing Execution Guide | Field Course</title>
+<title>TIB Systems — The Full Sweep | Course App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -3997,7 +3997,7 @@
 <div id="authGate" class="hidden">
   <div class="auth-card">
     <span class="mark">TIB Systems</span>
-    <span class="sub">SAP Testing Execution Guide</span>
+    <span class="sub">The Full Sweep · Course App</span>
     <h2 id="authTitle">Trainee Sign In</h2>
     <p class="hint" id="authHint">Sign in with the email and password used for your TIB enrollment.</p>
     <label for="authEmail">Email</label>
@@ -4013,10 +4013,10 @@
 <div id="notEnrolledGate" class="hidden" style="position:fixed; inset:0; z-index:200; background:var(--ink); align-items:center; justify-content:center; padding:20px;">
   <div class="auth-card not-enrolled-box">
     <span class="mark">TIB Systems</span>
-    <span class="sub">SAP Testing Execution Guide</span>
+    <span class="sub">The Full Sweep · Course App</span>
     <div class="icon">🔒</div>
     <h2>Not Yet Enrolled</h2>
-    <p class="hint">You're signed in as <b id="notEnrolledEmail"></b>, but this account isn't enrolled in the SAP Testing Execution Guide course yet. Contact your TIB administrator to be added.</p>
+    <p class="hint">You're signed in as <b id="notEnrolledEmail"></b>, but this account isn't enrolled in The Full Sweep yet. Contact your TIB administrator to be added.</p>
     <span class="signOutLink" id="notEnrolledSignOut">Sign out</span>
   </div>
 </div>
@@ -4026,7 +4026,7 @@
     <button id="menuToggle" onclick="toggleToc()">☰ Contents</button>
     <div class="brand">
       <span class="mark">TIB Systems</span>
-      <span class="sub">SAP Testing Execution Guide</span>
+      <span class="sub">The Full Sweep · Course App</span>
     </div>
   </div>
   <div class="breadcrumb" id="breadcrumb">Loading…</div>
@@ -4051,7 +4051,7 @@
   <main class="workspace">
     <section class="pane pane-course" id="paneCourse" style="width:56%;">
       <div class="pane-header">
-        <span>Field Course Player</span>
+        <span>The Full Sweep · Course App</span>
         <span class="tag" id="progressTag">Loading…</span>
       </div>
       <div class="pane-course-inner" id="courseInner"></div>
@@ -4274,8 +4274,8 @@ const OVERVIEW_SLIDES = [
 const INTRO_SLIDES = [
   {
     kicker: 'Start Here',
-    title: 'Welcome to the SAP Testing Execution Guide',
-    narration: 'Welcome to the SAP Testing Execution Guide. This course exists to close one specific gap.',
+    title: 'Welcome to The Full Sweep',
+    narration: 'Welcome to The Full Sweep. This course exists to close one specific gap.',
     html: `<p class="body-text">It's one thing to understand what a control finding looks like and why it matters — it's a different thing entirely to know exactly which screen to open to go find it yourself. That's the gap this course closes.</p>
            <p class="body-text">For every topic in the guide, you'll get the actual SAP transaction codes, Fiori app names, and GRC navigation paths a working consultant uses to pull real evidence — plus the execution steps and the evidence to capture, one topic (one Book) at a time.</p>
            <p class="body-text"><b>New to SAP?</b> You don't need prior SAP experience to start here. Every Book tells you exactly what to open and how to open it — including a plain-language instruction for every transaction code, not just the code itself.</p>`,
@@ -5460,7 +5460,7 @@ function showComplete(){
   document.getElementById('courseInner').innerHTML = `<div class="slide"><div class="complete-page">
     <div class="trophy">🏅</div>
     <h1>Course Complete</h1>
-    <p>You've worked through every Book across all 14 Parts of the SAP Testing Execution Guide — ${completedBooks.size} of ${totalBooks()} completed.</p>
+    <p>You've worked through every Book across all 14 Parts of The Full Sweep — ${completedBooks.size} of ${totalBooks()} completed.</p>
     <button class="cta-start" onclick="loadIntro()">Back to Course Introduction</button>
   </div></div>`;
   renderToc();
@@ -6039,7 +6039,7 @@ function pageNarration(){
     return `Book ${book.num} complete. Up next: Book ${nb.num}, ${nb.shortname}. ${nb.subtitle}. ${nb.intro}`;
   }
   if(state.mode === 'complete'){
-    return `Course complete. You've worked through every book across all six parts of the SAP Testing Execution Guide.`;
+    return `Course complete. You've worked through every Book across every Part of The Full Sweep.`;
   }
   if(state.mode === 'partintro'){
     const part = COURSE_DATA[state.partIdx];
