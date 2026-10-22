@@ -4184,7 +4184,7 @@ let authMode = 'signin'; // 'signin' | 'signup'
    Reuses the exact wording already used in the Course Introduction's Part table. */
 /* Two levels (from Jan 2027) — set per Book in sapexec_books.course_level / study_mode / live_session */
 function modeBadge(book, short){
-  if (book.num >= 101) return `<span class="mode-badge pre">${short ? 'Pre' : 'Optional pre-work'}</span>`;
+  if (book.num >= 101) return `<span class="mode-badge pre">${short ? 'Pre' : 'Recommended pre-work'}</span>`;
   if (book.courseLevel === 'intermediate' && book.studyMode === 'self_study')
     return `<span class="mode-badge guided">${short ? 'Int·G' : 'Intermediate · Guided self-study'}</span>`;
   if (book.courseLevel === 'intermediate' && book.liveSession)
@@ -4195,7 +4195,7 @@ function modeBadge(book, short){
 }
 
 const PART_SCOPE = {
-  '0':   'Optional SAP navigation basics — logging in, reading logs, and pulling table data — for anyone starting without prior SAP experience.',
+  '0':   'Recommended pre-work: SAP navigation basics — logging in, reading logs, and pulling table data — for anyone starting without prior SAP experience.',
   'I':   'Intermediate (sessions 2–6) — who has access, and whether that access creates conflicts of duty.',
   'II':  'Intermediate (sessions 7–9) — how system changes, backups, and interfaces are controlled.',
   'III': 'Intermediate (session 11) — whether financial entries are properly reviewed and approved.',
@@ -4221,14 +4221,14 @@ const OVERVIEW_SLIDES = [
     narration: 'What this course actually prepares you for.',
     html: `<p class="body-text">This is a full SOX / ITGC controls-testing course built around SAP GRC, Security, and Fiori — the same three skill areas that show up together in almost every SAP GRC/Security/Controls job posting, from entry-level through experienced hires, and rarely get taught together.</p>
            <p class="body-text">The goal isn't awareness of what SOX/ITGC testing is. It's the ability to sit down in a live SAP system on day one of a real engagement and actually do the work: run the transaction, pull the evidence, and write it up the way a reviewer expects to see it.</p>
-           <p class="body-text"><b>two levels — 19 Intermediate Books in 16 sessions and 8 Advanced Books in 12 sessions</b> — plus <b>19 self-paced Beyond the Core Books</b> and 8 optional Foundations — walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
+           <p class="body-text"><b>two levels — 19 Intermediate Books in 16 sessions and 8 Advanced Books in 12 sessions</b> — plus <b>19 self-paced Beyond the Core Books</b> and 8 Foundations as recommended pre-work — walk through that work topic by topic, each with the exact transaction codes, Fiori apps, and GRC navigation paths a working consultant uses — not just the concept behind them.</p>`,
   },
   {
     kicker: 'Scope Coverage',
     title: 'Every Domain a Controls Tester Is Actually Assigned',
     narration: 'Every domain a controls tester is actually assigned.',
     html: `<div class="intro-parts">
-      <div class="intro-part-row"><b>Foundations (Optional)</b><span>SAP GUI/Fiori/SPRO navigation, SUIM/SU01/PFCG display, log reading (SM20/SM19/SM21), transports (STMS/SE01/SCC4), batch jobs and interfaces (SM37/WE02/BD87), GRC Access Risk Analysis and table pulls (GRAC_SPM/SE16N). (8 Books)</span></div>
+      <div class="intro-part-row"><b>Foundations · Recommended pre-work</b><span>SAP GUI/Fiori/SPRO navigation, SUIM/SU01/PFCG display, log reading (SM20/SM19/SM21), transports (STMS/SE01/SCC4), batch jobs and interfaces (SM37/WE02/BD87), GRC Access Risk Analysis and table pulls (GRAC_SPM/SE16N). (8 Books)</span></div>
       <div class="intro-part-row"><b>Part I — Access Control &amp; Identity · Live</b><span>Segregation of duties, role design vs. role assignment, GRC Access Risk Analysis at user level. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part II — IT General Controls: Change &amp; Operations · Live (4) + self-paced (2)</b><span>Emergency changes, cutovers, third-party access, untested backups, interface gaps, backdoor access. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part III — Record to Report · Live (1) + self-paced (2)</b><span>Whether financial entries are properly reviewed and approved. (3 Books)</span></div>
@@ -4238,9 +4238,9 @@ const OVERVIEW_SLIDES = [
       <div class="intro-part-row"><b>Part VII — Business Application Controls · Live (5) + self-paced (1)</b><span>Matching, payments, tolerances, batch jobs, and asset parameters above ITGC. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls · Live</b><span>Credit-block release independence and billing cutoff / revenue recognition testing. (2 Books)</span></div>
       <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls · Self-paced</b><span>Bank reconciliation aging, tax configuration change, FX hedge accounting, and in-house cash / intercompany netting testing. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Self-paced</b><span>Third-party GRC platforms, full-population data analytics, and GRC 2026 / AI-assisted review. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Live (Advanced)</b><span>Third-party GRC platforms, full-population data analytics, and GRC 2026 / AI-assisted review. (3 Books)</span></div>
       <div class="intro-part-row"><b>Part XI — Manager Track · Live</b><span>RCM construction, design effectiveness, sampling methodology, and deficiency classification — from finding to closure. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Self-paced</b><span>Where a control lives, and who owns it, once the environment moves to Clean Core / RISE. (1 Book)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Live (Advanced)</b><span>Where a control lives, and who owns it, once the environment moves to Clean Core / RISE. (1 Book)</span></div>
       <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls · Self-paced</b><span>Ghost employees, unauthorized pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">That's the same range of ground a consultant is expected to cover across their first several engagements — compressed into one course instead of learned engagement by engagement.</p>`,
@@ -4257,7 +4257,7 @@ const OVERVIEW_SLIDES = [
              <li>Batch job and interface monitoring — Foundations 105, Part II and Part VII</li>
              <li>GRC platform proficiency (Access Risk Analysis and beyond) — Foundations 107, Part IV</li>
              <li>Financial/business-process control testing — Part III and Part VII</li>
-             <li>Audit-ready workpaper documentation — modeled on every anchor Book's completed exhibit</li>
+             <li>Audit-ready workpaper documentation — modeled on every Book's completed exhibit</li>
            </ul>
            <p class="body-text">By the time you finish, there shouldn't be a bullet point on a typical SAP GRC/Security/Controls job description you haven't already practiced.</p>`,
   },
@@ -4273,7 +4273,7 @@ const OVERVIEW_SLIDES = [
     kicker: 'Real Evidence',
     title: 'See a Finished Workpaper Before You Write Your Own',
     narration: 'See a finished workpaper before you write your own.',
-    html: `<p class="body-text">Nine anchor Books — one from nearly every Part — come with a real, fully completed workpaper exhibit: objective, procedure performed, evidence referenced, results, and conclusion, written exactly the way a reviewer expects to receive it. You can open the finished example for that topic before or after you attempt it yourself.</p>
+    html: `<p class="body-text">All 46 Books — the 27 taught live and the 19 Beyond the Core — come with a real, fully completed workpaper exhibit: objective, procedure performed, evidence referenced, results, and conclusion, written exactly the way a reviewer expects to receive it. You can open the finished example for that topic before or after you attempt it yourself.</p>
            <p class="body-text">The <b>Evidence &amp; Templates Library</b> adds the reference material a real engagement runs on: the SOX/ITGC control policy, the control matrix, the evidence testing tracker, and the entity-level controls register — each with a plain-language "what it is / how it's used" panel before you ever open the document cold.</p>
            <p class="body-text">Nothing here is theoretical. It's the same evidence-naming convention, the same documentation structure, and the same finished-product standard you'll be held to on an actual engagement.</p>`,
   },
@@ -4328,9 +4328,9 @@ const INTRO_SLIDES = [
       <div class="intro-part-row"><b>Part VII — Business Application Controls · Live (5) + self-paced (1)</b><span>Whether the business-process configuration layer above ITGC — matching, payments, tolerances, batch jobs, and asset parameters — actually works as intended. (6 Books)</span></div>
       <div class="intro-part-row"><b>Part VIII — Order-to-Cash Controls · Live</b><span>Whether the revenue side of the business is controlled as tightly as the money already covered above. (2 Books)</span></div>
       <div class="intro-part-row"><b>Part IX — Treasury &amp; Tax Controls · Self-paced</b><span>Bank reconciliation, tax configuration, FX hedge documentation, and intercompany cash controls. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Self-paced</b><span>Third-party GRC platforms, data analytics, and AI-assisted review. (3 Books)</span></div>
+      <div class="intro-part-row"><b>Part X — Adjacent Tools &amp; Emerging Practice · Live (Advanced)</b><span>Third-party GRC platforms, data analytics, and AI-assisted review. (3 Books)</span></div>
       <div class="intro-part-row"><b>Part XI — Manager Track · Live</b><span>Turning findings into a Risk &amp; Control Matrix, a severity rating, and a defensible conclusion. (4 Books)</span></div>
-      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Self-paced</b><span>Where a control lives and who owns it after a move to Clean Core / RISE. (1 Book)</span></div>
+      <div class="intro-part-row"><b>Part XII — Clean Core / RISE Governance · Live (Advanced)</b><span>Where a control lives and who owns it after a move to Clean Core / RISE. (1 Book)</span></div>
       <div class="intro-part-row"><b>Part XIII — Payroll &amp; Personnel Controls · Self-paced</b><span>Payroll master data, pay rate changes, off-cycle payments, and payroll-to-GL reconciliation. (4 Books)</span></div>
     </div>
     <p class="body-text" style="margin-top:16px;">Each Part groups Books by the area of control they test — the same structure used in real SOX/ITGC and GRC engagements.</p>`,
